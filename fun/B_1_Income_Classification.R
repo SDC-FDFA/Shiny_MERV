@@ -1,0 +1,2 @@
+
+# GNI per capita

@@ -11,8 +11,8 @@ source("text.R")
 
 # UI
 ui <- fluidPage(
-  titlePanel("Stats for MERV Analysis"),
-
+    titlePanel("International Cooperation (IC) Context Monitoring"),
+  
   sidebarLayout(
     sidebarPanel(
       width = 3,
@@ -60,11 +60,11 @@ ui <- fluidPage(
 
       hr(),
 
-      h2("A) Political System"),
+      h3("A) Political System"),
 
       hr(),
 
-      h3("Domestic Political Stability"),
+      h4("2) Domestic Political Stability"),
 
       hr(),
 
@@ -72,42 +72,84 @@ ui <- fluidPage(
 
       hr(),
 
-      h3("Voices & accountability, civil society, and media"),
+      h4("3) Civic and political rights, voice and media"),
+
+      # hr(),
+
+      # uiOutput("civic_summary"),
+      # 
+      # hr(),
+
+      plotOutput("civil_lib_plot", height = "300px"),
 
       hr(),
-
-      uiOutput("civic_summary"),
-
+      
+      h4("4) Rule of law, independence of justice, division of power"),
+      
+      hr(),
+      
+      plotOutput("judic_plot", height = "300px"),
+      
       hr(),
 
-      plotOutput("civic_plot", height = "300px"),
+      h3("B) Development baselines"),
 
       hr(),
-
-      h2("B) Development baselines"),
-
+      
+      h4("1) GDP Growth"),
+      
+      plotOutput("gdp_growth_plot", height = "300px"),
+      
       hr(),
 
-      h3("2) Human capital, poverty and inequalities"),
+      h4("2) Human capital, poverty and inequalities"),
 
       uiOutput("hdi_summary"),
 
       plotOutput("hdi_plot", height = "300px"),
 
       hr(),
-
-
-
-      # h3("Situation Analysis"),
-      # p("- Guiding questions"),
-      #
-      # h3("Consequences for the operation"),
-      #
-      # hr(),
+      
+      h4("3) Climate & environment risks"),
+      
+      plotOutput("climate_change_plot", height = "300px"),
+      
+      hr(),
+      
+      h3("C) Domestic partner context"),
+      
+      hr(),
+      
+      h4("1) Operational space"),
+      
+      plotOutput("risk_index_plot", height = "300px"),
+      
+      hr(),
+      
+      h4("2) Government effectiveness and control of corruption"),
+      
+      plotOutput("gov_effectiveness_plot", height = "300px"),
+      plotOutput("ctrl_corruption_plot", height = "300px"),
+      
+      hr(),
+      
+      h4("3) ODA as percent of recipient GNI"),
+      
+      plotOutput("oda_gni_plot", height = "300px"),
+      
+      hr(),
+      
+      h4("4) Non-state actors and private sector"),
+      
+      plotOutput("ccsi_plot", height = "300px"),
+      
+      plotOutput("bready_resolution_plot", height = "300px"),
+      
+      hr(),
 
       downloadButton(
         "download_report",
-        "2. Download Stats to prepare the MERV",
+        "2. Download to prepare the IC Context Monitoring report",
         class = "btn-success",
         style = "width: 100%; margin-top: 20px;"
       )
@@ -119,9 +161,19 @@ ui <- fluidPage(
 server <- function(input, output, session) {
 
   # Reactive value to store data
-  civic_data <- reactiveVal(NULL)
+  civil_lib_data <- reactiveVal(NULL)
+  judic_data <- reactiveVal(NULL)
   delib_data <- reactiveVal(NULL)
+  gdp_growth_data <- reactiveVal(NULL)
   hdi_data <- reactiveVal(NULL)
+  climate_change_data <- reactiveVal(NULL)
+  risk_index_data <- reactiveVal(NULL)
+  gov_effectiveness_data <- reactiveVal(NULL)
+  ctrl_corruption_data <- reactiveVal(NULL)
+  oda_gni_data <- reactiveVal(NULL)
+  ccsi_data <- reactiveVal(NULL)
+  bready_resolution_data <- reactiveVal(NULL)
+  
 
   # Fetch data when button is clicked
   observeEvent(input$fetch_data, {
@@ -130,7 +182,7 @@ server <- function(input, output, session) {
     countries <- c(input$main_country, input$comparison_countries)
     years <- as.numeric(input$years)
 
-    # Fetch deliberative democracy data
+    # A_2_Fetch deliberative democracy data
     showNotification("Fetching deliberative democracy index data...", type = "message", duration = NULL, id = "fetch_delib")
 
     delib_df <- get_wb_deliberative_data(countries, years)
@@ -144,24 +196,51 @@ server <- function(input, output, session) {
       showNotification("Failed to fetch deliberative democracy index data.", type = "warning", duration = 5)
     }
 
-    # Fetch civic space data
-    showNotification("Fetching civic space data...", type = "message", duration = NULL, id = "fetch_civic")
+    # A_3_Fetch civil liberties data
+    showNotification("Fetching civil liberties data...", type = "message", duration = NULL, id = "fetch_civil_lib")
 
-    civic_df <- get_wb_civic_data(countries)
+    civil_lib_df <- get_wb_a_3_civil_lib_data(countries, years)
 
-    if (!is.null(civic_df) && nrow(civic_df) > 0) {
-      civic_data(civic_df)
-      removeNotification(id = "fetch_civic")
-      showNotification("Civic space data fetched successfully!", type = "message", duration = 2)
+    if (!is.null(civil_lib_df) && nrow(civil_lib_df) > 0) {
+      civil_lib_data(civil_lib_df)
+      removeNotification(id = "fetch_civil_lib")
+      showNotification("Civil liberties data fetched successfully!", type = "message", duration = 2)
     } else {
-      removeNotification(id = "fetch_civic")
-      showNotification("Failed to fetch civic space data.", type = "warning", duration = 5)
+      removeNotification(id = "fetch_civil_lib")
+      showNotification("Failed to fetch civil liberties data.", type = "warning", duration = 5)
+    }
+    
+    # A_4_Fetch judicial constraints data
+    showNotification("Fetching judicial constraints data...", type = "message", duration = NULL, id = "fetch_judic")
+    
+    judic_df <- get_wb_judic_data(countries, years)
+    
+    if (!is.null(judic_df) && nrow(judic_df) > 0) {
+      judic_data(judic_df)
+      removeNotification(id = "fetch_judic")
+      showNotification("Judicial constraints data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_judic")
+      showNotification("Failed to fetch judicial constraints data.", type = "warning", duration = 5)
+    }
+    
+    # B_1_Fetch GDP growth data
+    showNotification("Fetching GDP growth data...", type = "message", duration = NULL, id = "fetch_gdp_growth")
+    
+    b_1_gdp_growth_df <- get_wb_b_1_gdp_growth(countries, years)
+    
+    if (!is.null(b_1_gdp_growth_df) && nrow(b_1_gdp_growth_df) > 0) {
+      gdp_growth_data(b_1_gdp_growth_df)
+      removeNotification(id = "fetch_gdp_growth")
+      showNotification("GDP growth data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_gdp_growth")
+      showNotification("Failed to fetch GDP growth data.", type = "warning", duration = 5)
     }
 
-    # Show notification
-    showNotification("Fetching data on HDI...", type = "message", duration = NULL, id = "fetch")
-
-    # Fetch HDI data
+    # B_2_Fetch HDI data
+    showNotification("Fetching data on HDI (always takes a little longer)...", type = "message", duration = NULL, id = "fetch")
+    
     data <- get_multiple_hdr(
       countries = countries,
       years = years,
@@ -175,7 +254,7 @@ server <- function(input, output, session) {
         mutate(year = as.numeric(year)) |>
         mutate(value = as.numeric(value)) |>
         separate(col = country, into = c("code", "country"), sep = " - ", extra = "merge")
-
+      
       hdi_data(df)
       removeNotification(id = "fetch")
       showNotification("Data fetched successfully!", type = "message", duration = 3)
@@ -183,20 +262,118 @@ server <- function(input, output, session) {
       removeNotification(id = "fetch")
       showNotification("Failed to fetch data. Check API key and selections.", type = "error", duration = 5)
     }
-
+    
+    # B_3_Climate change data
+    showNotification("Fetching INFORM Climage Change data...", type = "message", duration = NULL, id = "fetch_climate_change")
+    
+    b_3_climate_change_df <- get_wb_b_3_climate_change(countries, years)
+    
+    if (!is.null(b_3_climate_change_df) && nrow(b_3_climate_change_df) > 0) {
+      climate_change_data(b_3_climate_change_df)
+      removeNotification(id = "fetch_climate_change")
+      showNotification("INFORM Climate Change data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_climate_change")
+      showNotification("Failed to fetch INFORM Climate Change data.", type = "warning", duration = 5)
+    }
+    
+    # C_1_Risk Index data
+    showNotification("Fetching risk index data...", type = "message", duration = NULL, id = "fetch_risk_index")
+    
+    c_1_risk_index_df <- get_c_1_risk_index(countries, years)
+    
+    if (!is.null(c_1_risk_index_df) && nrow(c_1_risk_index_df) > 0) {
+      risk_index_data(c_1_risk_index_df)
+      removeNotification(id = "fetch_risk_index")
+      showNotification("Risk index data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_risk_index")
+      showNotification("Failed to fetch Risk index data.", type = "warning", duration = 5)
+    }
+    
+    # C_2_Government effectiveness data
+    showNotification("Fetching Government effectiveness data...", type = "message", duration = NULL, id = "fetch_gov_effectiveness")
+    
+    c_2_gov_effectiveness_df <- get_wb_c_2_gov_effectiveness(countries, years)
+    
+    if (!is.null(c_2_gov_effectiveness_df) && nrow(c_2_gov_effectiveness_df) > 0) {
+      gov_effectiveness_data(c_2_gov_effectiveness_df)
+      removeNotification(id = "fetch_gov_effectiveness")
+      showNotification("Government effectiveness data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_gov_effectiveness")
+      showNotification("Failed to fetch Government effectiveness data.", type = "warning", duration = 5)
+    }
+    
+    # C_2_Control of corruption data
+    showNotification("Fetching Control of corruption data...", type = "message", duration = NULL, id = "fetch_ctrl_corruption")
+    
+    c_2_ctrl_corruption_df <- get_wb_c_2_ctrl_corruption(countries, years)
+    
+    if (!is.null(c_2_ctrl_corruption_df) && nrow(c_2_ctrl_corruption_df) > 0) {
+      ctrl_corruption_data(c_2_ctrl_corruption_df)
+      removeNotification(id = "fetch_ctrl_corruption")
+      showNotification("Control of corruption data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_ctrl_corruption")
+      showNotification("Failed to fetch Control of corruption data.", type = "warning", duration = 5)
+    }
+    
+    # C_3_ODA percent of GNI data
+    showNotification("Fetching Control of ODA/GNI data...", type = "message", duration = NULL, id = "fetch_oda_gni")
+    
+    c_3_oda_gni_df <- get_wb_c_3_oda_gni(countries, years)
+    
+    if (!is.null(c_3_oda_gni_df) && nrow(c_3_oda_gni_df) > 0) {
+      oda_gni_data(c_3_oda_gni_df)
+      removeNotification(id = "fetch_oda_gni")
+      showNotification("Control of corruption data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_oda_gni")
+      showNotification("Failed to fetch Control of corruption data.", type = "warning", duration = 5)
+    }
+    
+    # C_4_Core Civil Society Index
+    showNotification("Fetching CCSI data...", type = "message", duration = NULL, id = "fetch_ccsi")
+    
+    c_4_ccsi_df <- get_wb_c_4_ccsi(countries, years)
+    
+    if (!is.null(c_4_ccsi_df) && nrow(c_4_ccsi_df) > 0) {
+      ccsi_data(c_4_ccsi_df)
+      removeNotification(id = "fetch_ccsi")
+      showNotification("CCSI data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_ccsi")
+      showNotification("Failed to fetch CCSI data.", type = "warning", duration = 5)
+    }
+    
+    # C_4_B-READY: Dispute Resolution
+    showNotification("Fetching B-READY data...", type = "message", duration = NULL, id = "fetch_bready")
+    
+    c_4_bready_resolution_df <- get_wb_c_4_bready_resolution(countries, years)
+    
+    if (!is.null(c_4_bready_resolution_df) && nrow(c_4_bready_resolution_df) > 0) {
+      bready_resolution_data(c_4_bready_resolution_df)
+      removeNotification(id = "fetch_bready")
+      showNotification("B-READY data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_bready")
+      showNotification("Failed to fetch B-READY data.", type = "warning", duration = 5)
+    }
+    
     removeNotification(id = "fetch")
   })
 
 
   # Reactive parts
-  civic_classification <- reactive({
-    req(civic_data())
-
-    civic_data() |>
-      mutate(classification = classify_civic(value)) |>
-      filter(code == input$main_country) |>
-      filter(year == max(civic_data()$year))
-  })
+  # civic_classification <- reactive({
+  #   req(civic_data())
+  # 
+  #   civic_data() |>
+  #     mutate(classification = classify_civic(value)) |>
+  #     filter(code == input$main_country) |>
+  #     filter(year == max(civic_data()$year))
+  # })
 
 
   hdi_classification <- reactive({
@@ -208,13 +385,14 @@ server <- function(input, output, session) {
       filter(year == max(hdi_data()$year))
   })
 
+  
 
   get_country_name <- reactive({
     names(country_list)[country_list == input$main_country]
   })
 
 
-  # Delib. Democracy Plot
+  # A_2_Delib. Democracy Plot
   output$delib_plot <- renderPlot({
     req(delib_data())
 
@@ -226,33 +404,33 @@ server <- function(input, output, session) {
 
     # country <- get_country_name()
 
-    draw_plot(df_delib, main_country, nyears, "Deliberative Democracy Index for the selected countries", "V-DEM")
+    draw_plot(df_delib, main_country, nyears, "Deliberative Democracy Index", "V-DEM")
 
   })
 
 
-  # Civic Summary text
-  output$civic_summary <- renderUI({
-    req(civic_classification())
+  # A_3_Civic Summary text
+  # output$civic_summary <- renderUI({
+  #   req(civic_classification())
+  # 
+  #   civic <- civic_classification()
+  # 
+  #   if (nrow(civic) > 0) {
+  #     HTML(sprintf(
+  #       "The Civic Space classification for <strong>%s</strong> is, as of <strong>%s</strong>, estimated at <strong>%s</strong>, which is classified as <strong>%s</strong>.",
+  #       get_country_name(),
+  #       civic$year[1],
+  #       round(civic$value[1], 3),
+  #       civic$classification[1]
+  #     ))
+  #   }
+  # })
 
-    civic <- civic_classification()
+  # A_3_Civil Liberties Plot
+  output$civil_lib_plot <- renderPlot({
+    req(civil_lib_data())
 
-    if (nrow(civic) > 0) {
-      HTML(sprintf(
-        "The Civic Space classification for <strong>%s</strong> is, as of <strong>%s</strong>, estimated at <strong>%s</strong>, which is classified as <strong>%s</strong>.",
-        get_country_name(),
-        civic$year[1],
-        round(civic$value[1], 3),
-        civic$classification[1]
-      ))
-    }
-  })
-
-  # Civic Plot
-  output$civic_plot <- renderPlot({
-    req(civic_data())
-
-    df <- civic_data() |>
+    df <- civil_lib_data() |>
       left_join(country_tibble, by = "code")
 
     nyears <- length(unique(df$year))
@@ -260,11 +438,45 @@ server <- function(input, output, session) {
 
     # country <- get_country_name()
 
-    draw_plot(df, main_country, nyears, "Civic Space index for the selected countries", "CIVICUS")
+    draw_plot(df, main_country, nyears, "Politiical civil liberties index", "V-DEM")
 
   })
-
-  # HDI Summary text
+  
+ 
+  # A_4_Judicial Constraints Plot
+  output$judic_plot <- renderPlot({
+    req(judic_data())
+    
+    df_judic <- judic_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_judic$year))
+    main_country <- input$main_country
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_judic, main_country, nyears, "Judicial Constraints on the Executive Index", "V-DEM")
+    
+  })
+  
+  # B_1_GDP growth Plot
+  output$gdp_growth_plot <- renderPlot({
+    req(gdp_growth_data())
+    
+    df_gdp_growth <- gdp_growth_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_gdp_growth$year))
+    main_country <- input$main_country
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_gdp_growth, main_country, nyears, "GDP Growth (% change)", "World Development Indicators (WDI)")
+    
+  })
+  
+  
+  # B_2_HDI Summary text
   output$hdi_summary <- renderUI({
     req(hdi_classification())
 
@@ -281,7 +493,7 @@ server <- function(input, output, session) {
     }
   })
 
-  # HDI Plot
+  # B_2_HDI Plot
   output$hdi_plot <- renderPlot({
     req(hdi_data())
 
@@ -289,10 +501,125 @@ server <- function(input, output, session) {
     nyears <- length(unique(df$year))
     main_country <- input$main_country
 
-    draw_plot(df, main_country, nyears, "Human Development Index (HDI) for the selected countries", "UNDP")
+    draw_plot(df, main_country, nyears, "Human Development Index (HDI)", "UNDP")
 
   })
+  
+  # B_3_Climate Change Plot
+  output$climate_change_plot <- renderPlot({
+    req(climate_change_data())
+    
+    df_climate_change <- climate_change_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_climate_change$year))
+    main_country <- input$main_country
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_climate_change, main_country, nyears, "Climate Change Risk Index", "INFORM")
+    
+  })
+  
+  # C_1_Risk Index Plot
+  output$risk_index_plot <- renderPlot({
+    req(risk_index_data())
+    
+    df_risk_index <- risk_index_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_risk_index$year))
+    main_country <- input$main_country
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_risk_index, main_country, nyears, "Risk Index", "INFORM")
+    
+  })
+  
+  # C_2_Government effectiveness Plot
+  output$gov_effectiveness_plot <- renderPlot({
+    req(gov_effectiveness_data())
+    
+    df_gov_effectiveness <- gov_effectiveness_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_gov_effectiveness$year))
+    main_country <- input$main_country
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_gov_effectiveness, main_country, nyears, "Government Effectiveness: Estimate", "World Bank")
+    
+  })
+  
+  
 
+  
+  # C_2_Control of corruption Plot
+  output$ctrl_corruption_plot <- renderPlot({
+    req(ctrl_corruption_data())
+    
+    df_ctrl_corruption <- ctrl_corruption_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_ctrl_corruption$year))
+    main_country <- input$main_country
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_ctrl_corruption, main_country, nyears, "Control of corruption: Estimate", "World Bank")
+    
+  })
+
+  # C_3_ODA percent of GNI Plot
+  output$oda_gni_plot <- renderPlot({
+    req(oda_gni_data())
+    
+    df_oda_gni <- oda_gni_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_oda_gni$year))
+    main_country <- input$main_country
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_oda_gni, main_country, nyears, "Net ODA received (% of GNI)", "OECD")
+    
+  })
+  
+  # C_4_Core Civil Society Index
+  output$ccsi_plot <- renderPlot({
+    req(ccsi_data())
+    
+    df_ccsi <- ccsi_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_ccsi$year))
+    main_country <- input$main_country
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_ccsi, main_country, nyears, "Core Civil Society Index", "V-DEM")
+    
+  })
+  
+  # C_4_B-Ready Dispute Resolution
+  output$bready_resolution_plot <- renderPlot({
+    req(bready_resolution_data())
+    
+    df_bready_resolution <- bready_resolution_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_bready_resolution$year))
+    main_country <- input$main_country
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_bready_resolution, main_country, nyears, "B-READY: Dispute Resolution", "B-READY")
+    
+  })
+  
   # Download handler for Word document
   output$download_report <- downloadHandler(
     filename = function() {
@@ -304,38 +631,237 @@ server <- function(input, output, session) {
       df <- hdi_data()
       hdi <- hdi_classification()
 
-      req(civic_data())
-      df_civ <- civic_data() |>
+      req(civil_lib_data())
+      df_civil_lib <- civil_lib_data() |>
         left_join(country_tibble, by = "code")
       #civ <- civic_classification()
 
+      req(judic_data())
+      df_jud <- judic_data() |>
+        left_join(country_tibble, by = "code")
+      
       req(delib_data())
       df_delib <- delib_data() |>
         left_join(country_tibble, by = "code")
+      
+      req(gdp_growth_data())
+      df_gdp_growth <- gdp_growth_data() |>
+        left_join(country_tibble, by = "code")
+      
+      req(climate_change_data())
+      df_climate_change <- climate_change_data() |>
+        left_join(country_tibble, by = "code")
+      
+      req(risk_index_data())
+      df_risk_index <- risk_index_data() |>
+        left_join(country_tibble, by = "code")
+      
+      req(gov_effectiveness_data())
+      df_gov_effectiveness <- gov_effectiveness_data() |>
+        left_join(country_tibble, by = "code")
 
+      req(ctrl_corruption_data())
+      df_ctrl_corruption <- ctrl_corruption_data() |>
+        left_join(country_tibble, by = "code")
+      
+      req(oda_gni_data())
+      df_oda_gni <- oda_gni_data() |>
+        left_join(country_tibble, by = "code")
+      
+      req(ccsi_data())
+      df_ccsi <- ccsi_data() |>
+        left_join(country_tibble, by = "code")
+      
+      req(bready_resolution_data())
+      df_bready_resolution <- bready_resolution_data() |>
+        left_join(country_tibble, by = "code")
+      
+      code <- input$main_country
+      df_title <- as.data.frame(code) |> 
+        left_join(country_tibble, by = "code") |> 
+        pull(country)
+      
+      # Classifications
+      
+      ## i.1 Scenarios
+      scenario_dev <- data.frame(
+        `Remains unchanged` = "☐",
+        `Change with no implications to programmes` = "☐",
+        `Change with moderate implications to programmes` = "☐",
+        `Change with significant implications to programmes` = "☐", 
+        check.names = FALSE
+      )
+      ft_scenario_dev <- flextable(scenario_dev) |> 
+        bold(part = "header") |>
+        bg(j = "Remains unchanged", bg = "#DAE9F7") |> 
+        bg(j = "Change with no implications to programmes", bg = "#D9F2D0") |> 
+        bg(j = "Change with moderate implications to programmes", bg = "#FFFFA3") |> 
+        bg(j = "Change with significant implications to programmes", bg = "#FFA7A7") |> 
+        width(j = 1:4, width = 1.2) |> 
+        fontsize(part = "header", size = 10) |> 
+        align(align = "center", part = "all")
+      
+      ## A_2 V-Dem Classifications
+      # v_dem_class <- data.frame(
+      #   `Liberal Democracy` = "☐",
+      #   `Electoral Democracy` = "☐",
+      #   `Democratic Grey Zone` = "☐",
+      #   `Autocratic Grey Zone` = "☐", 
+      #   `Electoral Autocracy` = "☐", 
+      #   `Closed Autocracy` = "☐", 
+      #   check.names = FALSE
+      # )
+      
+      # ## A_3 Rule of Law - WRONG
+      # table_rol_class <- data.frame(
+      #   `Very low` = "0 - 0.3",
+      #   `Low` = "0.3 - 0.4",
+      #   `Below average` = "0.4 - 0.5",
+      #   `Average` = "0.5 - 0.55", 
+      #   `Above average` = "0.55 - 0.7", 
+      #   `High` = "0.7 - 0.8", 
+      #   `Very high` = "0.8 - 1", 
+      #   check.names = FALSE
+      # )
+      # ft_table_rol_class <- flextable(table_rol_class) |> 
+      #   bold(part = "header") |>
+      #   bg(j = "Very low", bg = "#E26B0A") |> 
+      #   bg(j = "Low", bg = "#FABF8F") |> 
+      #   bg(j = "Below average", bg = "#FDE9D9") |> 
+      #   bg(j = "Average", bg = "#FEF6F0") |> 
+      #   bg(j = "Above average", bg = "#DAEEF3") |> 
+      #   bg(j = "High", bg = "#B7DEE8") |> 
+      #   bg(j = "Very high", bg = "#92CDDC") |> 
+      #   width(j = 1:7, width = 1) |> 
+      #   fontsize(part = "header", size = 9) |> 
+      #   fontsize(part = "body", size = 8) |> 
+      #   border(border.top = fp_border(width = 1),         
+      #          border.bottom = fp_border(width = 1),         
+      #          border.left = fp_border(width = 0),         
+      #          border.right = fp_border(width = 0),         
+      #          part = "all") |> 
+      #   align(align = "center", part = "all")
+      
+      ## B_2 HDI table
+      table_hdi_class <- data.frame(
+        `Low` = "< 0.55",
+        `Medium` = "0.55 - 0.69",
+        `High` = "0.7 - 0.79",
+        `Very high` = "> 0.8",
+        check.names = FALSE
+      )
+      ft_table_hdi_class <- flextable(table_hdi_class) |>
+        bold(part = "header") |>
+        bg(j = "Low", bg = "#FABF8F") |>
+        bg(j = "Medium", bg = "#FEF6F0") |>
+        bg(j = "High", bg = "#DAEEF3") |>
+        bg(j = "Very high", bg = "#92CDDC") |>
+        width(j = 1:4, width = 1.2) |>
+        fontsize(part = "header", size = 9) |>
+        fontsize(part = "body", size = 8) |>
+        border(border.top = fp_border(width = 1),
+               border.bottom = fp_border(width = 1),
+               border.left = fp_border(width = 0),
+               border.right = fp_border(width = 0),
+               part = "all") |>
+        align(align = "center", part = "all")
+      
+      # ## C_2 Government effectiveness table
+      # table_gov_effect_class <- data.frame(
+      #   `Very low` = "0 - 20",
+      #   `Low` = "20 - 40",
+      #   `Medium` = "40 - 60",
+      #   `High` = "60 - 80",
+      #   `Very high` = "80 - 100",
+      #   check.names = FALSE
+      # )
+      # ft_table_gov_effect_class <- flextable(table_gov_effect_class) |>
+      #   bold(part = "header") |>
+      #   bg(j = "Very low", bg = "#E26B0A") |>
+      #   bg(j = "Low", bg = "#FABF8F") |>
+      #   bg(j = "Medium", bg = "#FEF6F0") |>
+      #   bg(j = "High", bg = "#B7DEE8") |>
+      #   bg(j = "Very high", bg = "#92CDDC") |>
+      #   width(j = 1:5, width = 1) |>
+      #   fontsize(part = "header", size = 9) |>
+      #   fontsize(part = "body", size = 8) |>
+      #   border(border.top = fp_border(width = 1),
+      #          border.bottom = fp_border(width = 1),
+      #          border.left = fp_border(width = 0),
+      #          border.right = fp_border(width = 0),
+      #          part = "all") |>
+      #   align(align = "center", part = "all")
+      
+      # General table
+      empty <- data.frame(
+        "Please describe" = "",
+        check.names = FALSE
+      )
+      ft_empty <- flextable(empty) |>
+         # bold(part = "header") |>
+          color(color = "#808080", part = "header") |> 
+          fontsize(part = "header", size = 10) |>
+          fontsize(part = "body", size = 10) |>
+          border(border.top = fp_border(width = 1),
+                 border.bottom = fp_border(width = 1),
+                 part = "all") |>
+          align(align = "left", part = "all") |> 
+          autofit()
+        
+      
       # Create Word document
       doc <- read_docx(path = "Shiny_Merv_Markdown_Template.docx")
 
       # Main Title
       doc <- doc |>
         body_add_par("IC Programme Context Monitoring", style = "Title") |>
-        body_add_par(input$main_country, style = "Title") |>
+        #body_add_par(input$main_country, style = "Title") |>
+        body_add_par(df_title, style = "Title") |>
         body_add_par(paste("Date:", Sys.Date()), style = "Date") |>
         body_add_par("", style = "Normal")
 
       # Intro
       doc <- doc |>
-        body_add_par("OVERVIEW", style = "Subtitle") |>
-        body_add_par("", style = "Normal")
+        body_add_par("i. CONCLUSIONS", style = "Title_grey") |>
+        body_add_par("", style = "Normal") |> 
+        body_add_par("i.1 On scenario development", style = "Subtitle_green") |> 
+        body_add_par("based on initial Cooperation Programme scenarios and the assessed 
+                     'Consequences for the programme operations' in part ii. Analyses", style = "Non_Bullet_Instruction") |> 
+        body_add_par("Scenario development within the past 12 months:", style = "Non_Bullet_Instruction") |> 
+        
+        body_add_flextable(ft_scenario_dev) |> 
+        
+        
+        body_add_par("i.2 For strategic and operational steering", style = "Subtitle_red") |> 
+        body_add_par("based on 'Consequences for the programme operations in part ii. Analyses", style = "Non_Bullet_Instruction") |> 
+        body_add_par("", style = "Normal") |> 
+        body_add_par("Synthesize the shifts, if any, described under 'b) Consequences for the
+                     progrmame operations' of each chapter of part ii. Analyses with the focus on:
+                     1) CoPr scenario; 2) CoPr assumptions and risks (RDM results framework);
+                     or 3) Major/severe project portfolio risks (SDC Projects risks).", style = "List Bullet") |> 
+        body_add_par("Describe how these shifts, if any, affect the programme implementation, and how
+                     the latter must be strategically or operationally adjusted and steered.", style = "List Bullet") |> 
+        body_add_par("If none of the above, leave empty", style = "List Bullet") |> 
+        body_add_par("Optional: updates of interim assessments", style = "Non_Bullet_Instruction") |> 
+        body_add_par("", style = "Normal") |> 
+        body_add_par("i.3 For political dialogue and programme advocacy work", style = "Subtitle_blue") |> 
+        body_add_par("based on 'Consequences for the programme operations in part ii. Analyses", style = "Non_Bullet_Instruction") |> 
+        body_add_par("Describe how the described shifts under 'b) Consequences for the programme operations'
+                     of each chapter of part ii. Analyses shifts, if any, call for specific/additional
+                     political dialogue and programme advocacy work", style = "List Bullet") |> 
+        body_add_par("If none, leave empty", style = "List Bullet") |> 
+        body_add_par("Optional: updates of interim assessments", style = "Non_Bullet_Instruction") |> 
+        body_add_par("", style = "Normal")  |> 
+        body_add_break()
 
       # Analyses
       doc <- doc |>
-        body_add_par("ANALYSES", style = "Subtitle") |>
-        body_add_par("", style = "Normal")
+        body_add_par("ii. TREND ANALYSES", style = "Title_grey") 
 
       # A) Political System section
       doc <- doc |>
-        body_add_par("Political System", style = "heading 1") |>
+       # body_add_par("", style = "Line") |> 
+        body_add_par("A) Political System", style = "heading 1") |>
         body_add_par("", style = "Normal")
 
       # 1) International political context
@@ -346,24 +872,28 @@ server <- function(input, output, session) {
       # International political context Analysis and Consequences
       doc <- doc |>
         # body_add_par("", style = "Normal") |>
-        body_add_par("Situation Analysis", style = "heading 3") |>
+        body_add_par("a) Analysis", style = "heading 3") |>
         body_add_par(analysis_pol_1, style = "List Bullet") |>
         body_add_par(analysis_pol_2, style = "List Bullet") |>
         body_add_par("", style = "Normal") |>
-        body_add_par("Consequences for the operation", style = "heading 3") |>
+        body_add_par("Consequences for the programme operations", style = "heading 3") |>
+        body_add_par(conseq_1, style = "List Bullet") |>
+        body_add_par(conseq_2, style = "List Bullet") |>
+        body_add_par(conseq_3, style = "List Bullet") |>
+        body_add_par(if_none_empty, style = "List Bullet") |>
         body_add_par("", style = "Normal")
 
       # 2) Domestic political stability
       doc <- doc |>
         body_add_par("2) Domestic political stability", style = "heading 2")
 
-      # Create and save the civic plot
+      # Create and save the deliberative democracy plot
       temp_plot_delib <- tempfile(fileext = ".png")
 
       nyears <- length(unique(df_delib$year))
       main_country <- input$main_country
 
-      ggsave(temp_plot_delib, plot = draw_plot(df_delib, main_country, nyears, "Deliberative Democracy Index for the selected countries", "V-DEM"), width = 6, height = 2.5, dpi = 200)
+      ggsave(temp_plot_delib, plot = draw_plot(df_delib, main_country, nyears, "Deliberative Democracy index", "V-DEM"), width = 6, height = 2.5, dpi = 200)
 
       # Add plot to document
       doc <- doc |>
@@ -372,62 +902,137 @@ server <- function(input, output, session) {
       # Domestic political stability Analysis and Consequences
       doc <- doc |>
         # body_add_par("", style = "Normal") |>
-        body_add_par("Situation Analysis", style = "heading 3") |>
+        body_add_par("Analysis", style = "heading 3") |>
         body_add_par(analysis_delib_1, style = "List Bullet") |>
         body_add_par(analysis_delib_2, style = "List Bullet") |>
         body_add_par(analysis_delib_3, style = "List Bullet") |>
         body_add_par("", style = "Normal") |>
-        body_add_par("Consequences for the operation", style = "heading 3") |>
+        body_add_par("Consequences for the programme operations", style = "heading 3") |>
+        body_add_par(conseq_1, style = "List Bullet") |>
+        body_add_par(conseq_2, style = "List Bullet") |>
+        body_add_par(conseq_3, style = "List Bullet") |>
+        body_add_par(if_none_empty, style = "List Bullet") |>
         body_add_par("", style = "Normal")
 
-      # A.3) Voice & accountability
-      if (!is.null(civic_data())) {
-        civic <- civic_classification()
+      # A.3) Civic and political rights, voice and media
+      doc <- doc |>
+        body_add_par("3) Civil and political rights, voice and media", style = "heading 2")
+      # if (!is.null(civic_data())) {
+      #   civic <- civic_classification()
+      # 
+      #   if (nrow(civic) > 0) {
+      #     civic_text <- sprintf(
+      #       "The Civic Space Index for %s is, as of %s, estimated at %s, which is classified as %s.",
+      #       get_country_name(),
+      #       civic$year[1],
+      #       round(civic$value[1], 1),
+      #       civic$classification[1]
+      #     )
+      # 
+      #     doc <- doc |>
+      #       body_add_par("3) Civil and political rights, voice and media", style = "heading 2") |>
+      #       body_add_par(civic_text, style = "Normal")
+      #   }
+      # }
 
-        if (nrow(civic) > 0) {
-          civic_text <- sprintf(
-            "The Civic Space Index for %s is, as of %s, estimated at %s, which is classified as %s.",
-            get_country_name(),
-            civic$year[1],
-            round(civic$value[1], 1),
-            civic$classification[1]
-          )
-
-          doc <- doc |>
-            body_add_par("3) Voice & accountability, civil society, and media", style = "heading 2") |>
-            body_add_par(civic_text, style = "Normal")
-        }
-      }
-
-      # Create and save the civic plot
-      temp_plot_civic <- tempfile(fileext = ".png")
-
-      nyears <- length(unique(df_civ$year))
+      # Create and save the civil liberties plot
+      temp_plot_civil_lib <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_civil_lib$year))
       main_country <- input$main_country
-
-      ggsave(temp_plot_civic, plot = draw_plot(df_civ, main_country, nyears, "Civic Space index for the selected countries", "CIVICUS"), width = 6, height = 2.5, dpi = 200)
-
+      
+      ggsave(temp_plot_civil_lib, plot = draw_plot(df_civil_lib, main_country, nyears, "Political civil liberties index", "V-DEM"), width = 6, height = 2.5, dpi = 200)
+      
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_civic, width = 6, height = 2.5)
-
-      # Civic Situation Analysis and Consequences
+        body_add_img(src = temp_plot_civil_lib, width = 6, height = 2.5)
+      
+      # Domestic political stability Analysis and Consequences
       doc <- doc |>
        # body_add_par("", style = "Normal") |>
-        body_add_par("Situation Analysis", style = "heading 3") |>
+        body_add_par("Analysis", style = "heading 3") |>
         body_add_par(analysis_civic_1, style = "List Bullet") |>
         body_add_par(analysis_civic_2, style = "List Bullet") |>
         body_add_par(analysis_civic_3, style = "List Bullet") |>
         body_add_par("", style = "Normal") |>
-        body_add_par("Consequences for the operation", style = "heading 3") |>
+        body_add_par("Consequences for the programme operations", style = "heading 3") |>
+        body_add_par(conseq_1, style = "List Bullet") |>
+        body_add_par(conseq_2, style = "List Bullet") |>
+        body_add_par(conseq_3, style = "List Bullet") |>
+        body_add_par(if_none_empty, style = "List Bullet") |>
         body_add_par("", style = "Normal")
-
-      # B) Development baslines
+      
+      # Rule of law, independence of justice, division of power
       doc <- doc |>
-        body_add_par("Development baselines", style = "heading 1") |>
-        body_add_par("(in IC programme sectors)", style = "Normal") |>
+        body_add_par("4) Rule of law, independence of justice, division of power", style = "heading 2") 
+        
+      
+      # Create and save the judiciary plot
+        
+      temp_plot_judic <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_jud$year))
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_judic, plot = draw_plot(df_jud, main_country, nyears, "Judicial Constraints on the Executive Index", "V-DEM"), width = 6, height = 2.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_judic, width = 6, height = 2.5)
+      
+      doc <- doc |>
+        body_add_par("Analysis", style = "heading 3") |>
+        body_add_par(analysis_rol_1, style = "List Bullet") |>
+        body_add_par(analysis_rol_2, style = "List Bullet") |>
+        body_add_par(analysis_rol_3, style = "List Bullet") |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Consequences for the programme operations", style = "heading 3") |>
+        body_add_par(conseq_1, style = "List Bullet") |>
+        body_add_par(conseq_2, style = "List Bullet") |>
+        body_add_par(conseq_3, style = "List Bullet") |>
+        body_add_par(if_none_empty, style = "List Bullet") |>
+        body_add_par("", style = "Normal")  |> 
+       # body_add_par("", style = "Line") |> 
+        body_add_break()
+
+      
+      # B) Development baselines
+      doc <- doc |>
+        body_add_par("B) Development baselines", style = "heading 1") |>
+        body_add_par("(in IC programme sectors)", style = "Non_Bullet_Instruction") |>
         body_add_par("", style = "Normal")
 
+      # B.1 Economic prospects and systemic gaps
+      doc <- doc |>
+        body_add_par("1) Economic prospects and systemic gaps", style = "heading 2")
+      
+      # Create and save the gdp growth plot
+      temp_plot_gdp_growth <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_gdp_growth$year))
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_gdp_growth, plot = draw_plot(df_gdp_growth, main_country, nyears, "GDP Growth (% change)", "World Development Indicators (WDI)"), width = 6, height = 2.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_gdp_growth, width = 6, height = 2.5)
+      
+      doc <- doc |>
+        body_add_par("Analysis", style = "heading 3") |>
+        body_add_par(analysis_eco_1, style = "List Bullet") |>
+        body_add_par(analysis_eco_2, style = "List Bullet") |>
+        body_add_par(analysis_eco_3, style = "List Bullet") |>
+        body_add_par(analysis_eco_4, style = "List Bullet") |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Consequences for the programme operations", style = "heading 3") |>
+        body_add_par(conseq_1, style = "List Bullet") |>
+        body_add_par(conseq_2, style = "List Bullet") |>
+        body_add_par(conseq_3, style = "List Bullet") |>
+        body_add_par(if_none_empty, style = "List Bullet") |>
+        body_add_par("", style = "Normal")  
+      
+      
       # B.2 Human capital
       doc <- doc |>
         body_add_par("2) Human capital, poverty and inequalities", style = "heading 2")
@@ -441,7 +1046,10 @@ server <- function(input, output, session) {
           round(hdi$value[1], 3),
           hdi$classification[1]
         )
-        doc <- doc |> body_add_par(summary_text, style = "Normal")
+        doc <- doc |> 
+          body_add_par(summary_text, style = "Normal") |> 
+          body_add_flextable(ft_table_hdi_class)
+        
       }
 
       # Create and save the plot
@@ -450,25 +1058,220 @@ server <- function(input, output, session) {
       nyears <- length(unique(df$year))
       main_country <- input$main_country
 
-      ggsave(temp_plot_hdi, plot = draw_plot(df, main_country, nyears, "Human Development Index (HDI) for the selected countries", "UNDP"), width = 6, height = 2.5, dpi = 200)
+      ggsave(temp_plot_hdi, plot = draw_plot(df, main_country, nyears, "Human Development Index (HDI)", "UNDP"), width = 6, height = 2.5, dpi = 200)
 
       # Add plot to document
       doc <- doc |>
         body_add_par("", style = "Normal") |>
         body_add_img(src = temp_plot_hdi, width = 6, height = 2.5)
 
-     # HDI Situation Analysis and Consequences
+     # B.2 Analysis and Consequences
       doc <- doc |>
         body_add_par("", style = "Normal") |>
-        body_add_par("Situation Analysis", style = "heading 3") |>
+        body_add_par("Analysis", style = "heading 3") |>
         body_add_par(analysis_hdi_1, style = "List Bullet") |>
         body_add_par(analysis_hdi_2, style = "List Bullet") |>
         body_add_par(analysis_hdi_3, style = "List Bullet") |>
         body_add_par("", style = "Normal") |>
-        body_add_par("Consequences for the operation", style = "heading 3") |>
+        body_add_par("Consequences for the programme operations", style = "heading 3") |>
+        body_add_par(conseq_1, style = "List Bullet") |>
+        body_add_par(conseq_2, style = "List Bullet") |>
+        body_add_par(conseq_3, style = "List Bullet") |>
+        body_add_par(if_none_empty, style = "List Bullet") |>
+        body_add_par("", style = "Normal") 
+
+      # B.3 Climate & environment risks
+      doc <- doc |>
+        body_add_par("3) Climate & environment risks", style = "heading 2")
+      
+      # Create and save the plot
+      temp_plot_climate_change <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_climate_change$year))
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_climate_change, plot = draw_plot(df_climate_change, main_country, nyears, "Climate Change Risk Index", "INFORM"), width = 6, height = 2.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_climate_change, width = 6, height = 2.5)
+      
+      doc <- doc |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Analysis", style = "heading 3") |>
+        body_add_par(analysis_env_1, style = "List Bullet") |>
+        body_add_par(analysis_env_2, style = "List Bullet") |>
+        body_add_par(analysis_env_3, style = "List Bullet") |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Consequences for the programme operations", style = "heading 3") |>
+        body_add_par(conseq_1, style = "List Bullet") |>
+        body_add_par(conseq_2, style = "List Bullet") |>
+        body_add_par(conseq_3, style = "List Bullet") |>
+        body_add_par(if_none_empty, style = "List Bullet") |>
+        body_add_par("", style = "Normal")  |> 
+       # body_add_par("", style = "Line") |> 
+        body_add_break()
+      
+      # C) Domestic partner context
+      
+      doc <- doc |>
+        body_add_par("C) Domestic partner context", style = "heading 1") |>
+        body_add_par("(in IC programme sectors)", style = "Non_Bullet_Instruction") |>
         body_add_par("", style = "Normal")
-
-
+      
+      # 1) Operational space
+      doc <- doc |>
+        body_add_par("1) Operational space", style = "heading 2")
+      
+      # Create and save the plot
+      temp_plot_risk_index <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_risk_index$year))
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_risk_index, plot = draw_plot(df_risk_index, main_country, nyears, "Risk Index", "INFORM"), width = 6, height = 2.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_risk_index, width = 6, height = 2.5)
+      
+      doc <- doc |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Analysis", style = "heading 3") |>
+        body_add_par(operational_note_1, style = "Non_Bullet_Instruction") |>
+        body_add_par(operational_note_2, style = "Non_Bullet_Instruction") |>
+        body_add_par("", style = "Normal") |>
+        body_add_par(analysis_ops_1, style = "List Bullet") |>
+        body_add_par(analysis_ops_2, style = "List Bullet") |>
+        body_add_par(analysis_ops_3, style = "List Bullet") |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Consequences for the programme operations", style = "heading 3") |>
+        body_add_par(conseq_1, style = "List Bullet") |>
+        body_add_par(conseq_2, style = "List Bullet") |>
+        body_add_par(conseq_3, style = "List Bullet") |>
+        body_add_par(if_none_empty, style = "List Bullet") |>
+        body_add_par("", style = "Normal") 
+      
+      # 2) Government effectiveness and control of corruption
+      doc <- doc |>
+        body_add_par("2) Government effectiveness and control of corruption", style = "heading 2") 
+      
+      
+      # Create and save the plot
+      temp_plot_gov_effectiveness <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_gov_effectiveness$year))
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_gov_effectiveness, plot = draw_plot(df_gov_effectiveness, main_country, nyears, "Government Effectiveness: Estimate", "World Bank"), width = 6, height = 2.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_gov_effectiveness, width = 6, height = 2.5)
+      
+      # Create and save the plot
+      temp_plot_ctrl_corruption <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_ctrl_corruption$year))
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_ctrl_corruption, plot = draw_plot(df_ctrl_corruption, main_country, nyears, "Control of corruption: Estimate", "World Bank"), width = 6, height = 2.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_ctrl_corruption, width = 6, height = 2.5)
+      
+      doc <- doc |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Analysis", style = "heading 3") |>
+        body_add_par(analysis_gov_1, style = "List Bullet") |>
+        body_add_par(analysis_gov_2, style = "List Bullet") |>
+        body_add_par(analysis_gov_3, style = "List Bullet") |>
+        body_add_par(analysis_gov_4, style = "List Bullet") |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Consequences for the programme operations", style = "heading 3") |>
+        body_add_par(conseq_1, style = "List Bullet") |>
+        body_add_par(conseq_2, style = "List Bullet") |>
+        body_add_par(conseq_3, style = "List Bullet") |>
+        body_add_par(if_none_empty, style = "List Bullet") |>
+        body_add_par("", style = "Normal") 
+      
+      # 3) Role and relevance of official development assistance (ODA)
+      doc <- doc |>
+        body_add_par("3) Role and relevance of official development assistance (ODA)", style = "heading 2")
+      
+      # Create and save the plot
+      temp_plot_oda_gni <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_oda_gni$year))
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_oda_gni, plot = draw_plot(df_oda_gni, main_country, nyears, "Net ODA received (% of GNI)", "OECD"), width = 6, height = 2.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_oda_gni, width = 6, height = 2.5)
+      
+      doc <- doc |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Analysis", style = "heading 3") |>
+        body_add_par(analysis_oda_1, style = "List Bullet") |>
+        body_add_par(analysis_oda_2, style = "List Bullet") |>
+        body_add_par(analysis_oda_3, style = "List Bullet") |>
+        body_add_par(analysis_oda_4, style = "List Bullet") |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Consequences for the programme operations", style = "heading 3") |>
+        body_add_par(conseq_1, style = "List Bullet") |>
+        body_add_par(conseq_2, style = "List Bullet") |>
+        body_add_par(conseq_3, style = "List Bullet") |>
+        body_add_par(if_none_empty, style = "List Bullet") |>
+        body_add_par("", style = "Normal") 
+      
+      # 4) Non-state actors and private sector
+      doc <- doc |>
+        body_add_par("4) Non-state actors and private sector", style = "heading 2")
+      
+      # Create and save the CCSI plot
+      temp_plot_ccsi <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_ccsi$year))
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_ccsi, plot = draw_plot(df_ccsi, main_country, nyears, "Core Civil Society Index", "CCSI"), width = 6, height = 2.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_ccsi, width = 6, height = 2.5)
+      
+      # Create and save the B-READY plot
+      temp_plot_bready <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_bready_resolution$year))
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_bready, plot = draw_plot(df_bready_resolution, main_country, nyears, "B-READY: Dispute Resolution", "B-READY"), width = 6, height = 2.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_bready, width = 6, height = 2.5)
+      
+      
+      
+      doc <- doc |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Analysis", style = "heading 3") |>
+        body_add_par(analysis_nsa_1, style = "List Bullet") |>
+        body_add_par(analysis_nsa_2, style = "List Bullet") |>
+        body_add_par(analysis_nsa_3, style = "List Bullet") |>
+        body_add_par("", style = "Normal") |>
+        body_add_par("Consequences for the programme operations", style = "heading 3") |>
+        body_add_par(conseq_1, style = "List Bullet") |>
+        body_add_par(conseq_2, style = "List Bullet") |>
+        body_add_par(conseq_3, style = "List Bullet") |>
+        body_add_par(if_none_empty, style = "List Bullet") |>
+        body_add_par("", style = "Normal") 
+      
+      
       # Save document
       print(doc, target = file)
 
