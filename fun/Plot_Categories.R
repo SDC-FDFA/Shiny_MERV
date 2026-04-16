@@ -54,7 +54,7 @@ draw_plot_categories <- function(x, main_c, cat_labels, cat_min, cat_max, cat_co
     # Category labels inside bars
     geom_fit_text(aes(xmin = min, xmax = max, ymin = 0, ymax = 0.25, label = label),
                   reflow = TRUE, fontface = "bold", color = "white", 
-                  min.size = 4) +
+                  min.size = 4, max.size = 7) +
     # geom_text(aes(x = (min + max) / 2, y = 0.12, label = label),
     #           fontface = "bold", size = 3.5, color = "white") +
     # Value marker (triangle needle)

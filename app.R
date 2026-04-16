@@ -18,7 +18,7 @@ ui <- fluidPage(
     sidebarPanel(
       width = 3,
 
-      # textInput(
+            # textInput(
       #   "api_key",
       #   "HDR API Key:",
       #   value = api_key,
@@ -69,7 +69,7 @@ ui <- fluidPage(
 
       hr(),
 
-      plotOutput("delib_plot", height = "300px"),
+      plotOutput("delib_plot", height = "300px", width = "600px"),
 
       hr(),
 
@@ -81,7 +81,7 @@ ui <- fluidPage(
       # 
       # hr(),
 
-      plotOutput("civil_lib_plot", height = "300px"),
+      plotOutput("civil_lib_plot", height = "300px", width = "600px"),
 
       hr(),
       
@@ -89,7 +89,7 @@ ui <- fluidPage(
       
       hr(),
       
-      plotOutput("judic_plot", height = "300px"),
+      plotOutput("judic_plot", height = "300px", width = "600px"),
       
       hr(),
 
@@ -99,7 +99,7 @@ ui <- fluidPage(
       
       h4("1) GDP Growth"),
       
-      plotOutput("gdp_growth_plot", height = "300px"),
+      plotOutput("gdp_growth_plot", height = "300px", width = "600px"),
       
       hr(),
 
@@ -107,13 +107,13 @@ ui <- fluidPage(
 
       uiOutput("hdi_summary"),
 
-      plotOutput("hdi_plot", height = "300px"),
+      plotOutput("hdi_plot", height = "300px", width = "600px"),
 
       hr(),
       
       h4("3) Climate & environment risks"),
       
-      plotOutput("climate_change_plot", height = "300px"),
+      plotOutput("climate_change_plot", height = "300px", width = "600px"),
       
       hr(),
       
@@ -123,13 +123,13 @@ ui <- fluidPage(
       
       h4("1) Operational space"),
       
-      plotOutput("risk_index_plot", height = "300px"),
+      plotOutput("risk_index_plot", height = "300px", width = "600px"),
       
       hr(),
       
       h4("2) Government effectiveness and control of corruption"),
       
-      plotOutput("cpi_plot", height = "300px"),
+      plotOutput("cpi_plot", height = "300px", width = "600px"),
       
       # plotOutput("gov_effectiveness_plot", height = "300px"),
       # plotOutput("ctrl_corruption_plot", height = "300px"),
@@ -138,15 +138,15 @@ ui <- fluidPage(
       
       h4("3) ODA as percent of recipient GNI"),
       
-      plotOutput("oda_gni_plot", height = "300px"),
+      plotOutput("oda_gni_plot", height = "300px", width = "600px"),
       
       hr(),
       
       h4("4) Non-state actors and private sector"),
       
-      plotOutput("ccsi_plot", height = "300px"),
+      plotOutput("ccsi_plot", height = "300px", width = "600px"),
       
-      plotOutput("bready_resolution_plot", height = "300px"),
+      plotOutput("bready_resolution_plot", height = "300px", width = "600px"),
       
       hr(),
 
@@ -439,7 +439,7 @@ server <- function(input, output, session) {
 
     draw_plot(df_delib, main_country, nyears, "Deliberative Democracy Index", "V-DEM")
 
-  })
+  }, res = 96)
 
 
   # A_3_Civic Summary text
@@ -473,7 +473,7 @@ server <- function(input, output, session) {
 
     draw_plot(df, main_country, nyears, "Politiical civil liberties index", "V-DEM")
 
-  })
+  }, res = 96)
   
  
   # A_4_Judicial Constraints Plot
@@ -490,7 +490,7 @@ server <- function(input, output, session) {
     
     draw_plot(df_judic, main_country, nyears, "Judicial Constraints on the Executive Index", "V-DEM")
     
-  })
+  }, res = 96)
   
   # B_1_GDP growth Plot
   output$gdp_growth_plot <- renderPlot({
@@ -506,7 +506,7 @@ server <- function(input, output, session) {
     
     draw_plot(df_gdp_growth, main_country, nyears, "GDP Growth (% change)", "World Development Indicators (WDI)")
     
-  })
+  }, res = 96)
   
   
   # B_2_HDI Summary text
@@ -536,7 +536,7 @@ server <- function(input, output, session) {
 
     draw_plot(df, main_country, nyears, "Human Development Index (HDI)", "UNDP")
 
-  })
+  }, res = 96)
   
   # B_3_Climate Change Plot
   output$climate_change_plot <- renderPlot({
@@ -552,7 +552,7 @@ server <- function(input, output, session) {
     
     draw_plot(df_climate_change, main_country, nyears, "Climate Change Risk Index", "INFORM")
     
-  })
+  }, res = 96)
   
   # C_1_Risk Index Plot
   output$risk_index_plot <- renderPlot({
@@ -568,7 +568,7 @@ server <- function(input, output, session) {
     
     draw_plot(df_risk_index, main_country, nyears, "Risk Index", "INFORM")
     
-  })
+  }, res = 96)
   
   # C_2_Corruption perceptions Plot
   output$cpi_plot <- renderPlot({
@@ -584,7 +584,7 @@ server <- function(input, output, session) {
     
     draw_plot(df_cpi, main_country, nyears, "Corruption Perceptions Index", "Transparency International")
     
-  })
+  }, res = 96)
   
   # # C_2_Government effectiveness Plot
   # output$gov_effectiveness_plot <- renderPlot({
@@ -635,7 +635,7 @@ server <- function(input, output, session) {
     
     draw_plot(df_oda_gni, main_country, nyears, "Net ODA received (% of GNI)", "OECD")
     
-  })
+  }, res = 96)
   
   # C_4_Core Civil Society Index
   output$ccsi_plot <- renderPlot({
@@ -651,7 +651,7 @@ server <- function(input, output, session) {
     
     draw_plot(df_ccsi, main_country, nyears, "Core Civil Society Index", "V-DEM")
     
-  })
+  }, res = 96)
   
   # C_4_B-Ready Dispute Resolution
   output$bready_resolution_plot <- renderPlot({
@@ -667,7 +667,7 @@ server <- function(input, output, session) {
     
     draw_plot(df_bready_resolution, main_country, nyears, "B-READY: Dispute Resolution", "B-READY")
     
-  })
+  }, res = 96)
   
   # Download handler for Word document
   output$download_report <- downloadHandler(
