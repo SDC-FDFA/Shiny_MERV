@@ -50,3 +50,10 @@ get_wb_c_3_oda_gni <- function(countries, years) {
     return(NULL)
   }
 }
+
+oda_gni_label = c("Negligible", "Significant", "Strong", "Extreme")
+oda_gni_min   = c(0,      1,         5,      15)
+oda_gni_max   = c(1,     5,         15,      30)
+oda_gni_color = c("#519795", "#60b3b1", "#ef7d00", "#823a53")
+
+

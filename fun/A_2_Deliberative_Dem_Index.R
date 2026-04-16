@@ -49,3 +49,10 @@ get_wb_deliberative_data <- function(countries, years) {
     return(NULL)
   }
 }
+
+
+delib_label = c("Closed Autocracies", "Electoral Autocracies", "Electoral Democracies", "Liberal Democracies")
+delib_min   = c(0,      0.20,         0.40,      0.65)
+delib_max   = c(0.20,     0.40,         0.65,      1)
+delib_color = c("#823a53", "#ef7d00", "#60b3b1", "#519795")
+

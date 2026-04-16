@@ -68,3 +68,8 @@ classify_hdi <- function(value) {
     TRUE ~ "Low"
   )
 }
+
+hdi_label = c("Low", "Medium", "High", "Very High")
+hdi_min   = c(0,      0.55,         0.7,      0.8)
+hdi_max   = c(0.55,     0.7,         0.8,      1)
+hdi_color = c("#823a53", "#ef7d00", "#60b3b1", "#519795")

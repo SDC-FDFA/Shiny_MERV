@@ -72,6 +72,7 @@ source("fun/B_1_GDP_Growth.R")
 source("fun/B_2_HDI.R")
 source("fun/B_3_Climate_Change.R")
 source("fun/C_1_Risk_Index_patch.R")
+source("fun/C_2_CPI.R")
 source("fun/C_2_Government_Effectiveness.R")
 source("fun/C_2_Control_Corruption.R")
 source("fun/C_3_ODA_GNI.R")
@@ -81,6 +82,7 @@ source("fun/C_4_B_Ready.R")
 
 # One Plot to Rule Them ALl
 source("fun/Plot.R")
+source("fun/Plot_Categories.R")
 
 
 

@@ -49,3 +49,8 @@ get_wb_c_4_ccsi <- function(countries, years) {
     return(NULL)
   }
 }
+
+ccsi_label = c("Very Weak", "Weak", "Moderately Robust", "Robust", "Very Robust")
+ccsi_min   = c(0,      0.2,         0.4,      0.6,      0.8)
+ccsi_max   = c(0.2,     0.4,         0.6,      0.8,      1)
+ccsi_color = c("#823a53", "#ef7d00", "#f2a758", "#60b3b1", "#519795")

@@ -51,16 +51,9 @@ get_wb_judic_data <- function(countries, years) {
   }
 }
 # 
-# # CLASSIFICATION - WRONG
-# classify_judic <- function(value) {
-#   case_when(
-#     value >= 0.8 ~ "Very high",
-#     value < 0.8 & value >= 0.7 ~ "High",
-#     value < 0.7 & value >= 0.55 ~ "Above average",
-#     value < 0.55 & value >= 0.5 ~ "Average",
-#     value < 0.5 & value >= 0.4 ~ "Below average",
-#     value < 0.4 & value >= 0.3 ~ "Low",
-#     value < 0.3 & value >= 0 ~ "Very low",
-#     TRUE ~ "NA"
-#   )
-# }
+
+judic_label = c("Very Weak", "Weak", "Moderate", "Strong", "Very Strong")
+judic_min   = c(0,      0.2,         0.4,      0.6,      0.8)
+judic_max   = c(0.2,     0.4,         0.6,      0.8,      1)
+judic_color = c( "#823a53", "#ef7d00", "#f2a758", "#60b3b1", "#519795")
+

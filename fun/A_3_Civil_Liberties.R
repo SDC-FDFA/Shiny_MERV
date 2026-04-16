@@ -49,3 +49,11 @@ get_wb_a_3_civil_lib_data <- function(countries, years) {
     return(NULL)
   }
 }
+
+civil_lib_label = c("Very Low", "Low", "Moderate", "High", "Very High")
+civil_lib_min   = c(0,      0.2,         0.4,      0.6,      0.8)
+civil_lib_max   = c(0.2,     0.4,         0.6,      0.8,      1)
+civil_lib_color = c("#823a53", "#ef7d00",  "#f2a758", "#60b3b1", "#519795")
+
+
+

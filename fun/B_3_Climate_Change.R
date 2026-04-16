@@ -50,3 +50,8 @@ get_wb_b_3_climate_change <- function(countries, years) {
     return(NULL)
   }
 }
+
+climate_change_label = c("Very Low", "Low", "Medium", "High", "Very High")
+climate_change_min   = c(0,      2,         4,      6,      8)
+climate_change_max   = c(2,     4,         6,      8,      10)
+climate_change_color = c("#519795" , "#60b3b1", "#f2a758", "#ef7d00", "#823a53")
