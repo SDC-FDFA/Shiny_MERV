@@ -59,6 +59,18 @@ get_multiple_hdr <- function(countries, years, indicators = NULL, api_key) {
   return(results)
 }
 
+get_owid_b_2_hdi_data <- function(countries, years) {
+  
+  data_values <- read.csv("https://ourworldindata.org/grapher/human-development-index.csv?v=1&csvType=full&useColumnShortNames=true") |> 
+    rename(value = hdi__sex_total) |> 
+    select(year, code, value) |> 
+    filter(code %in% countries) |> 
+    filter(year %in% years) 
+
+  
+  return(data_values)
+}
+
 # CLASSIFICATION
 classify_hdi <- function(value) {
   case_when(

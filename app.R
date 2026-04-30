@@ -69,7 +69,7 @@ ui <- fluidPage(
 
       hr(),
 
-      plotOutput("delib_plot", height = "300px", width = "600px"),
+      plotOutput("elect_plot", height = "300px", width = "600px"),
 
       hr(),
 
@@ -89,7 +89,7 @@ ui <- fluidPage(
       
       hr(),
       
-      plotOutput("judic_plot", height = "300px", width = "600px"),
+      plotOutput("rol_plot", height = "300px", width = "600px"),
       
       hr(),
 
@@ -105,10 +105,12 @@ ui <- fluidPage(
 
       h4("2) Human capital, poverty and inequalities"),
 
-      uiOutput("hdi_summary"),
-
+      #uiOutput("hdi_summary"),
+      
+      plotOutput("gii_plot", height = "300px", width = "600px"),
+      
       plotOutput("hdi_plot", height = "300px", width = "600px"),
-
+      
       hr(),
       
       h4("3) Climate & environment risks"),
@@ -128,6 +130,8 @@ ui <- fluidPage(
       hr(),
       
       h4("2) Government effectiveness and control of corruption"),
+      
+      plotOutput("fgi_plot", height = "300px", width = "600px"),
       
       plotOutput("cpi_plot", height = "300px", width = "600px"),
       
@@ -165,14 +169,17 @@ server <- function(input, output, session) {
 
   # Reactive value to store data
   civil_lib_data <- reactiveVal(NULL)
-  judic_data <- reactiveVal(NULL)
-  delib_data <- reactiveVal(NULL)
+  rol_data <- reactiveVal(NULL)
+  elect_data <- reactiveVal(NULL)
+  regime_data <- reactiveVal(NULL)
   gdp_growth_data <- reactiveVal(NULL)
   gni_pc_data <- reactiveVal(NULL)
   hdi_data <- reactiveVal(NULL)
+  gii_data <- reactiveVal(NULL)
   climate_change_data <- reactiveVal(NULL)
   risk_index_data <- reactiveVal(NULL)
   cpi_data <- reactiveVal(NULL)
+  fgi_data <- reactiveVal(NULL)
   # gov_effectiveness_data <- reactiveVal(NULL)
   # ctrl_corruption_data <- reactiveVal(NULL)
   oda_gni_data <- reactiveVal(NULL)
@@ -187,24 +194,39 @@ server <- function(input, output, session) {
     countries <- c(input$main_country, input$comparison_countries)
     years <- as.numeric(input$years)
 
-    # A_2_Fetch deliberative democracy data
-    showNotification("Fetching deliberative democracy index data...", type = "message", duration = NULL, id = "fetch_delib")
+    # A_2_Fetch electoral democracy data
+    showNotification("Fetching electoral democracy index data...", type = "message", duration = NULL, id = "fetch_elect")
 
-    delib_df <- get_wb_deliberative_data(countries, years)
+    elect_df <- get_owid_electoral_data(countries, years)
 
-    if (!is.null(delib_df) && nrow(delib_df) > 0) {
-      delib_data(delib_df)
-      removeNotification(id = "fetch_delib")
-      showNotification("Deliberative democracy index data fetched successfully!", type = "message", duration = 2)
+    if (!is.null(elect_df) && nrow(elect_df) > 0) {
+      elect_data(elect_df)
+      removeNotification(id = "fetch_elect")
+      showNotification("Electoral democracy index data fetched successfully!", type = "message", duration = 2)
     } else {
-      removeNotification(id = "fetch_delib")
-      showNotification("Failed to fetch deliberative democracy index data.", type = "warning", duration = 5)
+      removeNotification(id = "fetch_elect")
+      showNotification("Failed to fetch electoral democracy index data.", type = "warning", duration = 5)
     }
+    
+    # A_2_Fetch regime type data
+    showNotification("Fetching regime type data...", type = "message", duration = NULL, id = "fetch_regime")
+    
+    regime_df <- get_owid_regime_data(countries, years)
+    
+    if (!is.null(regime_df) && nrow(regime_df) > 0) {
+      regime_data(regime_df)
+      removeNotification(id = "fetch_regime")
+      showNotification("Regime type data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_regime")
+      showNotification("Failed to fetch regime type data.", type = "warning", duration = 5)
+    }
+    
 
     # A_3_Fetch civil liberties data
     showNotification("Fetching civil liberties data...", type = "message", duration = NULL, id = "fetch_civil_lib")
 
-    civil_lib_df <- get_wb_a_3_civil_lib_data(countries, years)
+    civil_lib_df <- get_owid_a_3_civil_lib_data(countries, years)
 
     if (!is.null(civil_lib_df) && nrow(civil_lib_df) > 0) {
       civil_lib_data(civil_lib_df)
@@ -215,18 +237,18 @@ server <- function(input, output, session) {
       showNotification("Failed to fetch civil liberties data.", type = "warning", duration = 5)
     }
     
-    # A_4_Fetch judicial constraints data
-    showNotification("Fetching judicial constraints data...", type = "message", duration = NULL, id = "fetch_judic")
+    # A_4_Fetch rule of law data
+    showNotification("Fetching rule of law data...", type = "message", duration = NULL, id = "fetch_rol")
     
-    judic_df <- get_wb_judic_data(countries, years)
+    rol_df <- get_owid_a_4_rol_data(countries, years)
     
-    if (!is.null(judic_df) && nrow(judic_df) > 0) {
-      judic_data(judic_df)
-      removeNotification(id = "fetch_judic")
-      showNotification("Judicial constraints data fetched successfully!", type = "message", duration = 2)
+    if (!is.null(rol_df) && nrow(rol_df) > 0) {
+      rol_data(rol_df)
+      removeNotification(id = "fetch_rol")
+      showNotification("Rule of law data fetched successfully!", type = "message", duration = 2)
     } else {
-      removeNotification(id = "fetch_judic")
-      showNotification("Failed to fetch judicial constraints data.", type = "warning", duration = 5)
+      removeNotification(id = "fetch_rol")
+      showNotification("Failed to fetch rule of law data.", type = "warning", duration = 5)
     }
     
     # B_1_Fetch GDP growth data
@@ -258,32 +280,36 @@ server <- function(input, output, session) {
     }
 
     # B_2_Fetch HDI data
-    showNotification("Fetching data on HDI (always takes a little longer)...", type = "message", duration = NULL, id = "fetch")
+    showNotification("Fetching data on HDI...", type = "message", duration = NULL, id = "fetch_hdi")
     
-    data <- get_multiple_hdr(
-      countries = countries,
-      years = years,
-      indicators = "hdi",
-      api_key = hdr_api_key
-    )
+    b_2_hdi_df <- get_owid_b_2_hdi_data(countries, years)
 
-    # Process data
-    if (length(data) > 0) {
-      df <- bind_rows(data) |>
-        mutate(year = as.numeric(year)) |>
-        mutate(value = as.numeric(value)) |>
-        separate(col = country, into = c("code", "country"), sep = " - ", extra = "merge")
-      
-      hdi_data(df)
-      removeNotification(id = "fetch")
-      showNotification("Data fetched successfully!", type = "message", duration = 3)
+    if (!is.null(b_2_hdi_df) && nrow(b_2_hdi_df) > 0) {
+      hdi_data(b_2_hdi_df)
+      removeNotification(id = "fetch_hdi")
+      showNotification("HDI data fetched successfully!", type = "message", duration = 2)
     } else {
-      removeNotification(id = "fetch")
-      showNotification("Failed to fetch data. Check API key and selections.", type = "error", duration = 5)
+      removeNotification(id = "fetch_hdi")
+      showNotification("Failed to fetch HDI data.", type = "warning", duration = 5)
     }
     
+    # B_2_Fetch Gender Inequality data
+    showNotification("Fetching Gender Inequality Index data...", type = "message", duration = NULL, id = "fetch_gii")
+    
+    b_2_gii_df <- get_owid_b_2_gender_ineq_data(countries, years)
+    
+    if (!is.null(b_2_gii_df) && nrow(b_2_gii_df) > 0) {
+      gii_data(b_2_gii_df)
+      removeNotification(id = "fetch_gii")
+      showNotification("Gender Inequality Index data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_gii")
+      showNotification("Failed to fetch Gender Inequality Index data.", type = "warning", duration = 5)
+    }
+    
+    
     # B_3_Climate change data
-    showNotification("Fetching INFORM Climage Change data...", type = "message", duration = NULL, id = "fetch_climate_change")
+    showNotification("Fetching INFORM Climate Change data...", type = "message", duration = NULL, id = "fetch_climate_change")
     
     b_3_climate_change_df <- get_wb_b_3_climate_change(countries, years)
     
@@ -322,6 +348,20 @@ server <- function(input, output, session) {
     } else {
       removeNotification(id = "fetch_cpi")
       showNotification("Failed to fetch corruption perceptions data.", type = "warning", duration = 5)
+    }
+    
+    # C_2_Functioning Government data
+    showNotification("Fetching Functioning government index data...", type = "message", duration = NULL, id = "fetch_fgi")
+    
+    c_2_fgi_df <- get_owid_c_2_fgi_data(countries, years)
+    
+    if (!is.null(c_2_fgi_df) && nrow(c_2_fgi_df) > 0) {
+      fgi_data(c_2_fgi_df)
+      removeNotification(id = "fetch_fgi")
+      showNotification("Functioning government data fetched successfully!", type = "message", duration = 2)
+    } else {
+      removeNotification(id = "fetch_fgi")
+      showNotification("Failed to fetch functioning government data.", type = "warning", duration = 5)
     }
     
     # # C_2_Government effectiveness data
@@ -409,14 +449,14 @@ server <- function(input, output, session) {
   # })
 
 
-  hdi_classification <- reactive({
-    req(hdi_data())
-
-    hdi_data() |>
-      mutate(classification = classify_hdi(value)) |>
-      filter(code == input$main_country) |>
-      filter(year == max(hdi_data()$year))
-  })
+  # hdi_classification <- reactive({
+  #   req(hdi_data())
+  # 
+  #   hdi_data() |>
+  #     mutate(classification = classify_hdi(value)) |>
+  #     filter(code == input$main_country) |>
+  #     filter(year == max(hdi_data()$year))
+  # })
 
   
 
@@ -425,19 +465,19 @@ server <- function(input, output, session) {
   })
 
 
-  # A_2_Delib. Democracy Plot
-  output$delib_plot <- renderPlot({
-    req(delib_data())
+  # A_2_Elect. Democracy Plot
+  output$elect_plot <- renderPlot({
+    req(elect_data())
 
-    df_delib <- delib_data() |>
+    df_elect <- elect_data() |>
       left_join(country_tibble, by = "code")
 
-    nyears <- length(unique(df_delib$year))
+    nyears <- length(unique(df_elect$year))
     main_country <- input$main_country
 
     # country <- get_country_name()
 
-    draw_plot(df_delib, main_country, nyears, "Deliberative Democracy Index", "V-DEM")
+    draw_plot(df_elect, main_country, nyears, "Electoral Democracy Index", v_dem)
 
   }, res = 96)
 
@@ -471,24 +511,24 @@ server <- function(input, output, session) {
 
     # country <- get_country_name()
 
-    draw_plot(df, main_country, nyears, "Politiical civil liberties index", "V-DEM")
+    draw_plot(df, main_country, nyears, "Politiical civil liberties index", v_dem)
 
   }, res = 96)
   
  
-  # A_4_Judicial Constraints Plot
-  output$judic_plot <- renderPlot({
-    req(judic_data())
+  # A_4_Rule of law  Plot
+  output$rol_plot <- renderPlot({
+    req(rol_data())
     
-    df_judic <- judic_data() |>
+    df_rol <- rol_data() |>
       left_join(country_tibble, by = "code")
     
-    nyears <- length(unique(df_judic$year))
+    nyears <- length(unique(df_rol$year))
     main_country <- input$main_country
     
     # country <- get_country_name()
     
-    draw_plot(df_judic, main_country, nyears, "Judicial Constraints on the Executive Index", "V-DEM")
+    draw_plot(df_rol, main_country, nyears, "Rule of Law Index", v_dem)
     
   }, res = 96)
   
@@ -510,32 +550,54 @@ server <- function(input, output, session) {
   
   
   # B_2_HDI Summary text
-  output$hdi_summary <- renderUI({
-    req(hdi_classification())
-
-    hdi <- hdi_classification()
-
-    if (nrow(hdi) > 0) {
-      HTML(sprintf(
-        "The HDI for <strong>%s</strong> is, as of <strong>%s</strong>, estimated at <strong>%s</strong>, which is classified as <strong>%s</strong>.",
-        hdi$country[1],
-        hdi$year[1],
-        round(hdi$value[1], 3),
-        hdi$classification[1]
-      ))
-    }
-  })
+  # output$hdi_summary <- renderUI({
+  #   req(hdi_classification())
+  # 
+  #   hdi <- hdi_classification()
+  # 
+  #   if (nrow(hdi) > 0) {
+  #     HTML(sprintf(
+  #       "The HDI for <strong>%s</strong> is, as of <strong>%s</strong>, estimated at <strong>%s</strong>, which is classified as <strong>%s</strong>.",
+  #       hdi$country[1],
+  #       hdi$year[1],
+  #       round(hdi$value[1], 3),
+  #       hdi$classification[1]
+  #     ))
+  #   }
+  # })
 
   # B_2_HDI Plot
   output$hdi_plot <- renderPlot({
+    
     req(hdi_data())
-
-    df <- hdi_data()
-    nyears <- length(unique(df$year))
+    
+    df_hdi <- hdi_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_hdi$year))
     main_country <- input$main_country
-
-    draw_plot(df, main_country, nyears, "Human Development Index (HDI)", "UNDP")
-
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_hdi, main_country, nyears, "Human Development Index (HDI)", undp)
+    
+  }, res = 96)
+  
+  # B_2_GII Plot
+  output$gii_plot <- renderPlot({
+    
+    req(gii_data())
+    
+    df_gii <- gii_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_gii$year))
+    main_country <- input$main_country
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_gii, main_country, nyears, "Gender Inequality Index", undp)
+    
   }, res = 96)
   
   # B_3_Climate Change Plot
@@ -586,6 +648,21 @@ server <- function(input, output, session) {
     
   }, res = 96)
   
+  # C_2_Functioning government index Plot
+  output$fgi_plot <- renderPlot({
+    req(fgi_data())
+    
+    df_fgi <- fgi_data() |>
+      left_join(country_tibble, by = "code")
+    
+    nyears <- length(unique(df_fgi$year))
+    main_country <- input$main_country
+    
+    # country <- get_country_name()
+    
+    draw_plot(df_fgi, main_country, nyears, "Functioning Government Index", "Economist Intelligence Unit processed by Our World in Data")
+    
+  }, res = 96)
   # # C_2_Government effectiveness Plot
   # output$gov_effectiveness_plot <- renderPlot({
   #   req(gov_effectiveness_data())
@@ -649,7 +726,7 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_ccsi, main_country, nyears, "Core Civil Society Index", "V-DEM")
+    draw_plot(df_ccsi, main_country, nyears, "Civil Society Participation Index", v_dem)
     
   }, res = 96)
   
@@ -672,25 +749,31 @@ server <- function(input, output, session) {
   # Download handler for Word document
   output$download_report <- downloadHandler(
     filename = function() {
-      paste0("ShinyMERV_Report_", Sys.Date(), ".docx")
+      paste0("IC_Monitoring_Report_", Sys.Date(), ".docx")
     },
     contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     content = function(file) {
+      
       req(hdi_data())
-      df <- hdi_data()
-      hdi <- hdi_classification()
+      df_hdi <- hdi_data() |>
+        left_join(country_tibble, by = "code")
+      #hdi <- hdi_classification()
 
       req(civil_lib_data())
       df_civil_lib <- civil_lib_data() |>
         left_join(country_tibble, by = "code")
       #civ <- civic_classification()
 
-      req(judic_data())
-      df_jud <- judic_data() |>
+      req(rol_data())
+      df_jud <- rol_data() |>
         left_join(country_tibble, by = "code")
       
-      req(delib_data())
-      df_delib <- delib_data() |>
+      req(elect_data())
+      df_elect <- elect_data() |>
+        left_join(country_tibble, by = "code")
+      
+      req(regime_data())
+      df_regime <- regime_data() |>
         left_join(country_tibble, by = "code")
       
       req(gdp_growth_data())
@@ -699,6 +782,10 @@ server <- function(input, output, session) {
       
       req(gni_pc_data())
       df_gni_pc <- gni_pc_data() |>
+        left_join(country_tibble, by = "code")
+      
+      req(gii_data())
+      df_gii <- gii_data() |>
         left_join(country_tibble, by = "code")
       
       req(climate_change_data())
@@ -711,6 +798,10 @@ server <- function(input, output, session) {
       
       req(cpi_data())
       df_cpi <- cpi_data() |>
+        left_join(country_tibble, by = "code")
+      
+      req(fgi_data())
+      df_fgi <- fgi_data() |>
         left_join(country_tibble, by = "code")
       
       # req(gov_effectiveness_data())
@@ -835,34 +926,55 @@ server <- function(input, output, session) {
       doc <- doc |>
         body_add_par("2) Domestic political stability", style = "Heading 2_blue")
 
-      # Create and save the deliberative democracy plot
-      temp_plot_delib <- tempfile(fileext = ".png")
+      # Create and save the electoral democracy plot
+      temp_plot_elect <- tempfile(fileext = ".png")
 
-      nyears <- length(unique(df_delib$year))
+      nyears <- length(unique(df_elect$year))
       main_country <- input$main_country
 
-      ggsave(temp_plot_delib, plot = draw_plot(df_delib, main_country, nyears, "Deliberative Democracy index", "V-DEM"), width = 6, height = 2, dpi = 200)
+      ggsave(temp_plot_elect, plot = draw_plot(df_elect, main_country, nyears, "Electoral Democracy index", v_dem), width = 6, height = 1.8, dpi = 200)
 
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_delib, width = 6, height = 2, style = "Compact")
+        body_add_img(src = temp_plot_elect, width = 6, height = 1.8, style = "Compact")
       
       # Create and save the categories plot
-      temp_plot_delib_cat <- tempfile(fileext = ".png")
+      temp_plot_regime_cat <- tempfile(fileext = ".png")
       
       main_country <- input$main_country
       
-      ggsave(temp_plot_delib_cat, plot = draw_plot_categories(df_delib, main_country, delib_label, delib_min, delib_max, delib_color), width = 6, height = 0.7, dpi = 200)
+      ggsave(temp_plot_regime_cat, plot = draw_plot_categories_noval(df_regime, main_country, regime_label, regime_min, regime_max, regime_color), width = 6, height = 0.5, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_delib_cat, width = 6, height = 0.7, style = "Compact")
+        body_add_img(src = temp_plot_regime_cat, width = 6, height = 0.5, style = "Compact")
       
 
       # Domestic political stability Analysis and Consequences
       doc <- doc |>
-        body_add_par("The categories shown are indicative (cuf-off values are not official). The Deliberative Democracy Index ranges from 0 (least democratic)
-                     to 1 (most democratic).", style = "Caption_Note") |>
+        body_add_fpar(
+          fpar(
+            ftext("The "),
+                  hyperlink_ftext(
+                    text = "Electoral Democracy Index",
+                    href = "https://ourworldindata.org/grapher/electoral-democracy-index",
+                    prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+                  ),
+            ftext(" ranges from 0 (least democratic) to 1 (most democratic). The categories shown reflect the "),
+            hyperlink_ftext(
+              text = "Regimes of the World",
+              href = "https://ourworldindata.org/regimes-of-the-world-data",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            ftext(" classifications used by"),
+            hyperlink_ftext(
+              text = "V-DEM",
+              href = "https://v-dem.net/",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            fp_p = fp_par(word_style = "Caption_Note")
+          )
+        ) |> 
         body_add_fpar(value = comment_fun("Analysis", analysis_delib), 
                       style = "heading 3") |>
         text_input_field(placeholder = "Add text here") |> 
@@ -883,29 +995,43 @@ server <- function(input, output, session) {
       nyears <- length(unique(df_civil_lib$year))
       main_country <- input$main_country
       
-      ggsave(temp_plot_civil_lib, plot = draw_plot(df_civil_lib, main_country, nyears, "Political civil liberties index", "V-DEM"), width = 6, height = 2, dpi = 200)
+      ggsave(temp_plot_civil_lib, plot = draw_plot(df_civil_lib, main_country, nyears, "Political civil liberties index", v_dem), width = 6, height = 1.8, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_civil_lib, width = 6, height = 2, style = "Compact")
+        body_add_img(src = temp_plot_civil_lib, width = 6, height = 1.8, style = "Compact")
       
       # Create and save the categories plot
       temp_plot_civil_lib_cat <- tempfile(fileext = ".png")
       
       main_country <- input$main_country
       
-      ggsave(temp_plot_civil_lib_cat, plot = draw_plot_categories(df_civil_lib, main_country, civil_lib_label, civil_lib_min, civil_lib_max, civil_lib_color), width = 6, height = 0.7, dpi = 200)
+      ggsave(temp_plot_civil_lib_cat, plot = draw_plot_categories_noval(df_civil_lib, main_country, civil_lib_label, civil_lib_min, civil_lib_max, civil_lib_color), width = 6, height = 0.5, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
         # body_add_par("", style = "Normal") |>
-        body_add_img(src = temp_plot_civil_lib_cat, width = 6, height = 0.7, style = "Compact")
+        body_add_img(src = temp_plot_civil_lib_cat, width = 6, height = 0.5, style = "Compact")
       
       
       # Domestic political stability Analysis and Consequences
       doc <- doc |>
-        body_add_par("The categories shown are indicative (cuf-off values are not official). The Political Civil Liberties Index ranges from 0 (least liberties)
-                     to 1 (most liberties).", style = "Caption_Note") |>  
+        body_add_fpar(
+          fpar(
+            ftext("The categories shown are indicative (cut-off values are not official). The "),
+            hyperlink_ftext(
+              text = "Political Civil Liberties Index",
+              href = "https://ourworldindata.org/grapher/political-civil-liberties-index",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            ftext(" ranges from 0 (least liberties)
+                     to 1 (most liberties)."),
+            fp_p = fp_par(word_style = "Caption_Note")
+          )
+        ) |> 
+        # 
+        # body_add_par("The categories shown are indicative (cut-off values are not official). The Political Civil Liberties Index ranges from 0 (least liberties)
+        #              to 1 (most liberties).", style = "Caption_Note") |>  
         body_add_fpar(value = comment_fun("Analysis", analysis_civic), 
                       style = "heading 3") |>
         text_input_field(placeholder = "Add text here") |> 
@@ -919,34 +1045,48 @@ server <- function(input, output, session) {
       doc <- doc |>
         body_add_par("4) Rule of law, independence of justice, division of power", style = "Heading 2_blue") 
       
-      # Create and save the judiciary plot
+      # Create and save the roliary plot
         
-      temp_plot_judic <- tempfile(fileext = ".png")
+      temp_plot_rol <- tempfile(fileext = ".png")
       
       nyears <- length(unique(df_jud$year))
       main_country <- input$main_country
       
-      ggsave(temp_plot_judic, plot = draw_plot(df_jud, main_country, nyears, "Judicial Constraints on the Executive Index", "V-DEM"), width = 6, height = 2, dpi = 200)
+      ggsave(temp_plot_rol, plot = draw_plot(df_jud, main_country, nyears, "Rule of Law Index", v_dem), width = 6, height = 1.8, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_judic, width = 6, height = 2, style = "Compact")
+        body_add_img(src = temp_plot_rol, width = 6, height = 1.8, style = "Compact")
       
       # Create and save the categories plot
-      temp_plot_judic_cat <- tempfile(fileext = ".png")
+      temp_plot_rol_cat <- tempfile(fileext = ".png")
       
       main_country <- input$main_country
       
-      ggsave(temp_plot_judic_cat, plot = draw_plot_categories(df_jud, main_country, judic_label, judic_min, judic_max, judic_color), width = 6, height = 0.7, dpi = 200)
+      ggsave(temp_plot_rol_cat, plot = draw_plot_categories_noval(df_jud, main_country, rol_label, rol_min, rol_max, rol_color), width = 6, height = 0.5, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_judic_cat, width = 6, height = 0.7, style = "Compact")
+        body_add_img(src = temp_plot_rol_cat, width = 6, height = 0.5, style = "Compact")
       
       
       doc <- doc |>
-        body_add_par("The categories shown are indicative (cuf-off values are not official). The Judicial Constraints on the Executive Index ranges from 0 (least constrained)
-                     to 1 (most constrained).", style = "Caption_Note") |>    
+        body_add_fpar(
+          fpar(
+            ftext("The categories shown are indicative (cut-off values are not official). The "),
+            hyperlink_ftext(
+              text = "Rule of Law Index",
+              href = "https://ourworldindata.org/grapher/rule-of-law-index",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            ftext(" ranges from 0 (least rule-based)
+                     to 1 (most rule_based)."),
+            fp_p = fp_par(word_style = "Caption_Note")
+          )
+        ) |> 
+        
+        # body_add_par("The categories shown are indicative (cut-off values are not official). The Rule of Law Index ranges from 0 (least rule-based)
+        #              to 1 (most rule_based).", style = "Caption_Note") |>    
         body_add_fpar(value = comment_fun("Analysis", analysis_rol), 
                       style = "heading 3") |>
         text_input_field(placeholder = "Add text here") |> 
@@ -973,23 +1113,23 @@ server <- function(input, output, session) {
       nyears <- length(unique(df_gdp_growth$year))
       main_country <- input$main_country
       
-      ggsave(temp_plot_gdp_growth, plot = draw_plot(df_gdp_growth, main_country, nyears, "GDP Growth (% change)", "World Development Indicators (WDI)"), width = 6, height = 2, dpi = 200)
+      ggsave(temp_plot_gdp_growth, plot = draw_plot(df_gdp_growth, main_country, nyears, "GDP Growth (% change)", "World Development Indicators (WDI)"), width = 6, height = 1.8, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_gdp_growth, width = 6, height = 2, style = "Compact")
+        body_add_img(src = temp_plot_gdp_growth, width = 6, height = 1.8, style = "Compact")
       
       # Create and save the categories plot
       temp_plot_gni_pc_cat <- tempfile(fileext = ".png")
       
       main_country <- input$main_country
       
-      ggsave(temp_plot_gni_pc_cat, plot = draw_plot_categories(df_gni_pc, main_country, gni_pc_label, gni_pc_min, gni_pc_max, gni_pc_color), width = 6, height = 0.7, dpi = 200)
+      ggsave(temp_plot_gni_pc_cat, plot = draw_plot_categories(df_gni_pc, main_country, gni_pc_label, gni_pc_min, gni_pc_max, gni_pc_color), width = 6, height = 0.5, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
         body_add_par("Income classification:", style = "Normal") |>
-        body_add_img(src = temp_plot_gni_pc_cat, width = 6, height = 0.7, style = "Compact")
+        body_add_img(src = temp_plot_gni_pc_cat, width = 6, height = 0.5, style = "Compact")
       
       doc <- doc |>
         body_add_fpar(value = comment_fun("Analysis", analysis_eco), 
@@ -1005,30 +1145,66 @@ server <- function(input, output, session) {
       # B.2 Human capital
       doc <- doc |>
         body_add_par("2) Human capital, poverty and inequalities", style = "Heading 2_green")
+      
+      # Create and save the plot
+      temp_plot_gii <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_gii$year))
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_gii, plot = draw_plot(df_gii, main_country, nyears, "Gender Inequality Index", undp), width = 6, height = 1.8, dpi = 200)
+      
+      # Create and save the categories plot
+      temp_plot_gii_pc_cat <- tempfile(fileext = ".png")
+      
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_gii_pc_cat, plot = draw_plot_categories_noval(df_gii, main_country, gii_label, gii_min, gii_max, gii_color), width = 6, height = 0.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_gii, width = 6, height = 1.8, style = "Compact") |> 
+        body_add_img(src = temp_plot_gii_pc_cat, width = 6, height = 0.5, style = "Compact") |> 
+        body_add_fpar(
+          fpar(
+            ftext("These cut-offs vary slightly across studies but remain consistent in academic and policy literature. The "),
+            hyperlink_ftext(
+              text = "Gender Inequality Index",
+              href = "https://ourworldindata.org/grapher/gender-inequality-index-from-the-human-development-report",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            ftext(" covers the dimensions of reproductive health, empowerment and economic status. It ranges from 0 (very low inequality) to 10 (very high inequality)."),
+            fp_p = fp_par(word_style = "Caption_Note")
+          )
+        ) 
+        # body_add_par("The Gender Inequality Index covers the dimensions of reproductive health, 
+        # empowerment and economic status. It ranges from 0 (very low inequality) 
+        #              to 10 (very high inequality).", style = "Caption_Note")
 
       # Create and save the plot
       temp_plot_hdi <- tempfile(fileext = ".png")
 
-      nyears <- length(unique(df$year))
+      nyears <- length(unique(df_hdi$year))
       main_country <- input$main_country
 
-      ggsave(temp_plot_hdi, plot = draw_plot(df, main_country, nyears, "Human Development Index (HDI)", "UNDP"), width = 6, height = 2, dpi = 200)
+      ggsave(temp_plot_hdi, plot = draw_plot(df_hdi, main_country, nyears, "Human Development Index (HDI)", undp), width = 6, height = 1.8, dpi = 200)
 
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_hdi, width = 6, height = 2, style = "Compact")
+        body_add_img(src = temp_plot_hdi, width = 6, height = 1.8, style = "Compact")
 
       # Create and save the categories plot
       temp_plot_hdi_cat <- tempfile(fileext = ".png")
       
       main_country <- input$main_country
       
-      ggsave(temp_plot_hdi_cat, plot = draw_plot_categories(df, main_country, hdi_label, hdi_min, hdi_max, hdi_color), width = 6, height = 0.7, dpi = 200)
+      ggsave(temp_plot_hdi_cat, plot = draw_plot_categories_noval(df_hdi, main_country, hdi_label, hdi_min, hdi_max, hdi_color), width = 6, height = 0.5, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        # body_add_par("", style = "Normal") |>
-        body_add_img(src = temp_plot_hdi_cat, width = 6, height = 0.7, style = "Compact")
+        body_add_par("HDI classification:", style = "Normal") |>
+        body_add_img(src = temp_plot_hdi_cat, width = 6, height = 0.5, style = "Compact")
+      
  
      # B.2 Analysis and Consequences
       doc <- doc |>
@@ -1053,27 +1229,45 @@ server <- function(input, output, session) {
       nyears <- length(unique(df_climate_change$year))
       main_country <- input$main_country
       
-      ggsave(temp_plot_climate_change, plot = draw_plot(df_climate_change, main_country, nyears, "Climate Change Risk Index", "INFORM"), width = 6, height = 2, dpi = 200)
+      ggsave(temp_plot_climate_change, plot = draw_plot(df_climate_change, main_country, nyears, "Climate Change Risk Index", "INFORM"), width = 6, height = 1.8, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_climate_change, width = 6, height = 2, style = "Compact")
+        body_add_img(src = temp_plot_climate_change, width = 6, height = 1.8, style = "Compact")
       
       # Create and save the categories plot
       temp_plot_climate_change_cat <- tempfile(fileext = ".png")
       
       main_country <- input$main_country
       
-      ggsave(temp_plot_climate_change_cat, plot = draw_plot_categories(df_climate_change, main_country, climate_change_label, climate_change_min, climate_change_max, climate_change_color), width = 6, height = 0.7, dpi = 200)
+      ggsave(temp_plot_climate_change_cat, plot = draw_plot_categories_noval(df_climate_change, main_country, climate_change_label, climate_change_min, climate_change_max, climate_change_color), width = 6, height = 0.5, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_climate_change_cat, width = 6, height = 0.7, style = "Compact")
+        body_add_img(src = temp_plot_climate_change_cat, width = 6, height = 0.5, style = "Compact")
       
       doc <- doc |>
-        body_add_par("The INFORM Climate Change is essentially a future projection of the
-                    INFORM Risk Index. It ranges from 0 (very low risk) 
-                     to 10 (very high risk).", style = "Caption_Note") |>    
+        body_add_fpar(
+          fpar(
+            ftext("The "),
+            hyperlink_ftext(
+              text = "INFORM Climate Change",
+              href = "https://drmkc.jrc.ec.europa.eu/inform-index/INFORM-Climate-Change",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            ftext(" is essentially a future projection of the "),
+            hyperlink_ftext(
+              text = "INFORM Risk Index",
+              href = "https://drmkc.jrc.ec.europa.eu/inform-index/INFORM-Risk",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            ftext(". It ranges from 0 (very low risk) to 10 (very high risk)."),
+            fp_p = fp_par(word_style = "Caption_Note")
+          )
+        ) |> 
+        # body_add_par("The INFORM Climate Change is essentially a future projection of the
+        #             INFORM Risk Index. It ranges from 0 (very low risk) 
+        #              to 10 (very high risk).", style = "Caption_Note") |>    
         body_add_fpar(value = comment_fun("Analysis", analysis_env), 
                       style = "heading 3") |>
         text_input_field(placeholder = "Add text here") |> 
@@ -1100,29 +1294,41 @@ server <- function(input, output, session) {
       nyears <- length(unique(df_risk_index$year))
       main_country <- input$main_country
       
-      ggsave(temp_plot_risk_index, plot = draw_plot(df_risk_index, main_country, nyears, "Risk Index", "INFORM"), width = 6, height = 2, dpi = 200)
+      ggsave(temp_plot_risk_index, plot = draw_plot(df_risk_index, main_country, nyears, "Risk Index", "INFORM"), width = 6, height = 1.8, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_risk_index, width = 6, height = 2, style = "Compact")
+        body_add_img(src = temp_plot_risk_index, width = 6, height = 1.8, style = "Compact")
       
       # Create and save the categories plot
       temp_plot_risk_index_cat <- tempfile(fileext = ".png")
       
       main_country <- input$main_country
       
-      ggsave(temp_plot_risk_index_cat, plot = draw_plot_categories(df_risk_index, main_country, risk_index_label, risk_index_min, risk_index_max, risk_index_color), width = 6, height = 0.8, dpi = 200)
+      ggsave(temp_plot_risk_index_cat, plot = draw_plot_categories_noval(df_risk_index, main_country, risk_index_label, risk_index_min, risk_index_max, risk_index_color), width = 6, height = 0.5, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
         # body_add_par("", style = "Normal") |>
-        body_add_img(src = temp_plot_risk_index_cat, width = 6, height = 0.8, style = "Compact")
+        body_add_img(src = temp_plot_risk_index_cat, width = 6, height = 0.5, style = "Compact")
       
       doc <- doc |>
-        body_add_par("The INFORM Risk Index is a global, open source risk assessment
-                     for humanitarian crises and disasters. 
-                      It ranges from 0 (very low risk)
-                    to 10 (very high risk).", style = "Caption_Note") |>    
+        body_add_fpar(
+          fpar(
+            ftext("The "),
+            hyperlink_ftext(
+              text = "INFORM Risk Index",
+              href = "https://drmkc.jrc.ec.europa.eu/inform-index/INFORM-Risk",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            ftext(" is a global, open source risk assessment for humanitarian crises and disasters. It ranges from 0 (very low risk) to 10 (very high risk)."),
+            fp_p = fp_par(word_style = "Caption_Note")
+          )
+        ) |> 
+        # body_add_par("The INFORM Risk Index is a global, open source risk assessment
+        #              for humanitarian crises and disasters. 
+        #               It ranges from 0 (very low risk)
+        #             to 10 (very high risk).", style = "Caption_Note") |>    
         body_add_fpar(value = comment_fun("Analysis", analysis_ops), 
                       style = "heading 3") |>
         body_add_par(operational_note_1, style = "Non_Bullet_Instruction") |>
@@ -1140,31 +1346,80 @@ server <- function(input, output, session) {
         body_add_par("2) Government effectiveness and control of corruption", style = "Heading 2_red") 
       
       # Create and save the plot
+      temp_plot_fgi <- tempfile(fileext = ".png")
+      
+      nyears <- length(unique(df_fgi$year))
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_fgi, plot = draw_plot(df_fgi, main_country, nyears, "Functioning Government Index", "Economist Intelligence Unit - processed by Our World in Data"), width = 6, height = 1.8, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_fgi, width = 6, height = 1.8, style = "Compact")
+      
+      # Create and save the categories plot
+      temp_plot_fgi_cat <- tempfile(fileext = ".png")
+      
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_fgi_cat, plot = draw_plot_categories_noval(df_fgi, main_country, fgi_label, fgi_min, fgi_max, fgi_color), width = 6, height = 0.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_fgi_cat, width = 6, height = 0.5, style = "Compact")
+      
+      doc <- doc |>
+        body_add_fpar(
+          fpar(
+            ftext("The categories shown are indicative (cut-off values are not official). The "),
+            hyperlink_ftext(
+              text = "Functioning Government Index",
+              href = "https://ourworldindata.org/grapher/functioning-government-index-eiu",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            ftext(" ranges from 0 (least effective) to 10 (most effective)."),
+            fp_p = fp_par(word_style = "Caption_Note")
+          )
+        ) 
+      
+      # Create and save the plot
       temp_plot_cpi <- tempfile(fileext = ".png")
       
       nyears <- length(unique(df_cpi$year))
       main_country <- input$main_country
       
-      ggsave(temp_plot_cpi, plot = draw_plot(df_cpi, main_country, nyears, "Corruption Perceptions Index", "Transparency International"), width = 6, height = 2, dpi = 200)
+      ggsave(temp_plot_cpi, plot = draw_plot(df_cpi, main_country, nyears, "Corruption Perceptions Index", "Transparency International"), width = 6, height = 1.8, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_cpi, width = 6, height = 2, style = "Compact")
+        body_add_img(src = temp_plot_cpi, width = 6, height = 1.8, style = "Compact")
       
       # Create and save the categories plot
       temp_plot_cpi_cat <- tempfile(fileext = ".png")
       
       main_country <- input$main_country
       
-      ggsave(temp_plot_cpi_cat, plot = draw_plot_categories(df_cpi, main_country, cpi_label, cpi_min, cpi_max, cpi_color), width = 6, height = 0.8, dpi = 200)
+      ggsave(temp_plot_cpi_cat, plot = draw_plot_categories_noval(df_cpi, main_country, cpi_label, cpi_min, cpi_max, cpi_color), width = 6, height = 0.5, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_cpi_cat, width = 6, height = 0.8, style = "Compact")
+        body_add_img(src = temp_plot_cpi_cat, width = 6, height = 0.5, style = "Compact")
       
       doc <- doc |>
-        body_add_par("The categories shown are indicative (cuf-off values are not official). The Corruption Perceptions Index ranges from 0 (most corrupt)
-                     to 100 (least corrupt).", style = "Caption_Note")
+        body_add_fpar(
+          fpar(
+            ftext("The categories shown are indicative (cut-off values are not official). The "),
+            hyperlink_ftext(
+              text = "Corruption Perceptions Index",
+              href = "https://ourworldindata.org/grapher/ti-corruption-perception-index",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            ftext(" ranges from 0 (most corrupt) to 100 (least corrupt)."),
+            fp_p = fp_par(word_style = "Caption_Note")
+          )
+        ) 
+        # body_add_par("The categories shown are indicative (cut-off values are not official). The Corruption Perceptions Index ranges from 0 (most corrupt)
+        #              to 100 (least corrupt).", style = "Caption_Note")
       
       doc <- doc |>
         body_add_fpar(value = comment_fun("Analysis", analysis_gov), 
@@ -1187,26 +1442,26 @@ server <- function(input, output, session) {
       nyears <- length(unique(df_oda_gni$year))
       main_country <- input$main_country
       
-      ggsave(temp_plot_oda_gni, plot = draw_plot(df_oda_gni, main_country, nyears, "Net ODA received (% of GNI)", "OECD"), width = 6, height = 2, dpi = 200)
+      ggsave(temp_plot_oda_gni, plot = draw_plot(df_oda_gni, main_country, nyears, "Net ODA received (% of GNI)", "OECD"), width = 6, height = 1.8, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_oda_gni, width = 6, height = 2, style = "Compact")
+        body_add_img(src = temp_plot_oda_gni, width = 6, height = 1.8, style = "Compact")
       
       # Create and save the categories plot
       temp_plot_oda_gni_cat <- tempfile(fileext = ".png")
       
       main_country <- input$main_country
       
-      ggsave(temp_plot_oda_gni_cat, plot = draw_plot_categories(df_oda_gni, main_country, oda_gni_label, oda_gni_min, oda_gni_max, oda_gni_color), width = 6, height = 0.8, dpi = 200)
+      ggsave(temp_plot_oda_gni_cat, plot = draw_plot_categories_noval(df_oda_gni, main_country, oda_gni_label, oda_gni_min, oda_gni_max, oda_gni_color), width = 6, height = 0.5, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_oda_gni_cat, width = 6, height = 0.8, style = "Compact")
+        body_add_img(src = temp_plot_oda_gni_cat, width = 6, height = 0.5, style = "Compact")
       
       
       doc <- doc |>
-        body_add_par("The categories shown are indicative (cuf-off values are not official).", style = "Caption_Note") |> 
+        body_add_par("The categories shown are indicative (cut-off values are not official).", style = "Caption_Note") |> 
         body_add_par("", style = "Normal") |>
         body_add_fpar(value = comment_fun("Analysis", analysis_oda), 
                       style = "heading 3") |>
@@ -1228,26 +1483,38 @@ server <- function(input, output, session) {
       nyears <- length(unique(df_ccsi$year))
       main_country <- input$main_country
       
-      ggsave(temp_plot_ccsi, plot = draw_plot(df_ccsi, main_country, nyears, "Core Civil Society Index", "CCSI"), width = 6, height = 2, dpi = 200)
+      ggsave(temp_plot_ccsi, plot = draw_plot(df_ccsi, main_country, nyears, "Civil Society Participation Index", v_dem), width = 6, height = 1.8, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_ccsi, width = 6, height = 2, style = "Compact")
+        body_add_img(src = temp_plot_ccsi, width = 6, height = 1.8, style = "Compact")
       
       # Create and save the categories plot
       temp_plot_ccsi_cat <- tempfile(fileext = ".png")
       
       main_country <- input$main_country
       
-      ggsave(temp_plot_ccsi_cat, plot = draw_plot_categories(df_ccsi, main_country, ccsi_label, ccsi_min, ccsi_max, ccsi_color), width = 6, height = 0.8, dpi = 200)
+      ggsave(temp_plot_ccsi_cat, plot = draw_plot_categories_noval(df_ccsi, main_country, ccsi_label, ccsi_min, ccsi_max, ccsi_color), width = 6, height = 0.5, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_ccsi_cat, width = 6, height = 0.8, style = "Compact")
+        body_add_img(src = temp_plot_ccsi_cat, width = 6, height = 0.5, style = "Compact")
       
       doc <- doc |>
-        body_add_par("The categories shown are indicative (cuf-off values are not official). The Core Civil Society Index ranges from 0 (weak, repressed civil society)
-                     to 1 (robust, autonomous civil society).", style = "Caption_Note")
+        body_add_fpar(
+          fpar(
+            ftext("The categories shown are indicative (cut-off values are not official). The "),
+            hyperlink_ftext(
+              text = "Civil Society Participation Index",
+              href = "https://ourworldindata.org/grapher/civil-society-participation-index",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            ftext(" ranges from 0 (least active) to 1 (most active)."),
+            fp_p = fp_par(word_style = "Caption_Note")
+          )
+        ) 
+        # body_add_par("The categories shown are indicative (cut-off values are not official). The Core Civil Society Index ranges from 0 (weak, repressed civil society)
+        #              to 1 (robust, autonomous civil society).", style = "Caption_Note")
       
       
       # Create and save the B-READY plot
@@ -1256,21 +1523,38 @@ server <- function(input, output, session) {
       nyears <- length(unique(df_bready_resolution$year))
       main_country <- input$main_country
       
-      ggsave(temp_plot_bready, plot = draw_plot(df_bready_resolution, main_country, nyears, "B-READY: Dispute Resolution", "B-READY"), width = 6, height = 2, dpi = 200)
+      ggsave(temp_plot_bready, plot = draw_plot(df_bready_resolution, main_country, nyears, "B-READY: Dispute Resolution", "B-READY"), width = 6, height = 1.8, dpi = 200)
       
       # Add plot to document
       doc <- doc |>
-        body_add_img(src = temp_plot_bready, width = 6, height = 2, style = "Compact")
+        body_add_img(src = temp_plot_bready, width = 6, height = 1.8, style = "Compact")
       
       
       
       doc <- doc |>
-        body_add_par("The B-READY: Dispute Resolution measures efficiency and quality
+        body_add_fpar(
+          fpar(
+            ftext("The "),
+            hyperlink_ftext(
+              text = "B-READY: Dispute Resolution",
+              href = "https://data.worldbank.org/indicator/IC.BRE.DR.OS",
+              prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
+            ),
+            ftext(" measures efficiency and quality
                      of the resolution of commercial disputes based on three dimensions
                      (quality of regulations, public services and ease of resolving a commercial
                      dispute. The overall score ranges from 0 (worst)
                      to 100 (best). This is a new indicator and not yet available
-                     for all countries.", style = "Caption_Note") |> 
+                     for all countries."),
+            fp_p = fp_par(word_style = "Caption_Note")
+          )
+        ) |> 
+        # body_add_par("The B-READY: Dispute Resolution measures efficiency and quality
+        #              of the resolution of commercial disputes based on three dimensions
+        #              (quality of regulations, public services and ease of resolving a commercial
+        #              dispute. The overall score ranges from 0 (worst)
+        #              to 100 (best). This is a new indicator and not yet available
+        #              for all countries.", style = "Caption_Note") |> 
         body_add_fpar(value = comment_fun("Analysis", analysis_nsa), 
                       style = "heading 3") |>
         text_input_field(placeholder = "Add text here") |> 
@@ -1296,10 +1580,16 @@ server <- function(input, output, session) {
         text_input_field(placeholder = "Add text here")
       
       # Save document
+      #tmp_docx <- tempfile(fileext = ".docx")
       print(doc, target = file)
-
+      
+      # collapse_heading_sections(
+      #   tmp_docx,
+      #   output_path = file,
+      #   heading_styles = "Heading2blue"  # adjust if Step 1 shows a different ID
+      # )
       # Clean up temp file
-      unlink(temp_plot_hdi)
+      # unlink(temp_plot_hdi)
     }
   )
 }

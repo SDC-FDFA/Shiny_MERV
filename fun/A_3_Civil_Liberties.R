@@ -1,5 +1,6 @@
 
 ## A_3_Political Civil Liberties Index
+### WB API
 get_wb_a_3_civil_lib_data <- function(countries, years) {
   wb_base_url <- "https://data360api.worldbank.org"
   wb_endpoint <- "/data360/data"
@@ -48,6 +49,25 @@ get_wb_a_3_civil_lib_data <- function(countries, years) {
   } else {
     return(NULL)
   }
+}
+
+
+get_owid_a_3_civil_lib_data <- function(countries, years) {
+  
+  data_values <- read.csv("https://ourworldindata.org/grapher/political-civil-liberties-index.csv?v=1&csvType=full&useColumnShortNames=true") |> 
+    rename(value = pol_libs_vdem__estimate_best) |> 
+    select(year, code, value) |> 
+    filter(code %in% countries) |> 
+    filter(year %in% years) 
+  # mutate(case_when(
+  #   value == 0 ~ "Closed Autocracy",
+  #   value == 1 ~ "Electoral Autocracy",
+  #   value == 2 ~ "Electoral Democracy",
+  #   value == 3 ~ "Liberal Democracy"
+  #   TRUE ~ NA
+  # ))
+  
+  return(data_values)
 }
 
 civil_lib_label = c("Very Low", "Low", "Moderate", "High", "Very High")

@@ -1,4 +1,9 @@
 
+
+# Captions
+v_dem <- "V-Dem (2026) – processed by Our World in Data"
+undp <- "UNDP, Human Development Report (2025) – with minor processing by Our World in Data"
+
 # Summarised contents
 
 i_1 <- "based on initial Cooperation Programme scenarios and the assessed 'Consequences for the programme operations' in part 'ii. Analyses'"

@@ -1,5 +1,4 @@
 
-## Civic Space Data
 get_wb_deliberative_data <- function(countries, years) {
   wb_base_url <- "https://data360api.worldbank.org"
   wb_endpoint <- "/data360/data"
