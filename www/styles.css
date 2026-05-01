@@ -1,0 +1,29 @@
+/* Title */
+  .navbar-brand {
+    font-size: 1.6rem !important;
+    font-weight: 700 !important;
+  }
+
+/* Section headers */
+  h3 {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    color: #333;
+  }
+
+h4 {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* Card headers */
+  .card-header {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+/* Plot containers */
+  .shiny-plot-output, 
+.shiny-giraffe-output { 
+  min-width: 400px; 
+}

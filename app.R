@@ -5,62 +5,32 @@ library(ggrepel)
 library(officer)
 library(flextable)
 library(config)
+library(ggiraph)
+library(bslib)
 
 source("functions.R")
 source("text.R")
 source("comments.R")
 
 # UI
-ui <- fluidPage(
-    titlePanel("International Cooperation (IC) Context Monitoring"),
-  
-  sidebarLayout(
-    sidebarPanel(
-      width = 3,
-
-            # textInput(
-      #   "api_key",
-      #   "HDR API Key:",
-      #   value = api_key,
-      #   placeholder = "Enter your API key"
-      # ),
-      p("Select countries and year and click on 'Fetch data' at the bottom"),
-
-      selectInput(
-        "main_country",
-        "Main Country:",
-        choices = country_list,
-        selected = "LAO"
+ui <- page_sidebar(
+      title = "International Cooperation (IC) Context Monitoring",
+      theme = bs_theme(bootswatch = "flatly", primary = "#519796"),
+      tags$head(
+        tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
       ),
-
-      checkboxGroupInput(
-        "comparison_countries",
-        "Comparison Countries:",
-        choices = country_list,
-        selected = c("KHM", "THA")
+      
+      sidebar = sidebar(
+        width = 250,
+        p("Select countries and year and click on 'Fetch data' at the bottom",
+          style = "font-size: 0.75rem; color: #666;"),
+        selectInput("main_country", "Main Country:", choices = country_list, selected = "LAO"),
+        checkboxGroupInput("comparison_countries", "Comparison Countries:", choices = country_list, selected = c("KHM", "THA")),
+        checkboxGroupInput("years", "Years:", choices = 2018:2025, selected = 2018:2025, inline = TRUE),
+        actionButton("fetch_data", "1. Fetch Data", icon = icon("download"),
+                     class = "btn-primary w-100 mt-2")
       ),
-
-      checkboxGroupInput(
-        "years",
-        "Years:",
-        choices = 2018:2025,
-        selected = 2018:2025,
-        inline = TRUE
-      ),
-
-      actionButton(
-        "fetch_data",
-        "1. Fetch Data",
-        class = "btn-primary",
-        style = "width: 100%; margin-top: 10px;"
-      )
-    ),
-
-    mainPanel(
-      width = 9,
-
-      hr(),
-
+      
       h3("A) Political System"),
 
       hr(),
@@ -69,8 +39,11 @@ ui <- fluidPage(
 
       hr(),
 
-      plotOutput("elect_plot", height = "300px", width = "600px"),
-
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("elect_plot", width = "100%", height = "300px")
+      ),
+  
       hr(),
 
       h4("3) Civic and political rights, voice and media"),
@@ -80,17 +53,23 @@ ui <- fluidPage(
       # uiOutput("civic_summary"),
       # 
       # hr(),
-
-      plotOutput("civil_lib_plot", height = "300px", width = "600px"),
+  
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("civil_lib_plot", width = "100%", height = "300px")
+      ),
 
       hr(),
       
       h4("4) Rule of law, independence of justice, division of power"),
       
       hr(),
-      
-      plotOutput("rol_plot", height = "300px", width = "600px"),
-      
+  
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("rol_plot", width = "100%", height = "300px")
+      ),
+
       hr(),
 
       h3("B) Development baselines"),
@@ -99,24 +78,36 @@ ui <- fluidPage(
       
       h4("1) GDP Growth"),
       
-      plotOutput("gdp_growth_plot", height = "300px", width = "600px"),
-      
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("gdp_growth_plot", width = "100%", height = "300px")
+      ),
+
       hr(),
 
       h4("2) Human capital, poverty and inequalities"),
 
       #uiOutput("hdi_summary"),
-      
-      plotOutput("gii_plot", height = "300px", width = "600px"),
-      
-      plotOutput("hdi_plot", height = "300px", width = "600px"),
-      
+  
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("hdi_plot", width = "100%", height = "300px")
+      ),
+  
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("gii_plot", width = "100%", height = "300px")
+      ),
+
       hr(),
       
       h4("3) Climate & environment risks"),
       
-      plotOutput("climate_change_plot", height = "300px", width = "600px"),
-      
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("climate_change_plot", width = "100%", height = "300px")
+      ),
+
       hr(),
       
       h3("C) Domestic partner context"),
@@ -125,16 +116,25 @@ ui <- fluidPage(
       
       h4("1) Operational space"),
       
-      plotOutput("risk_index_plot", height = "300px", width = "600px"),
-      
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("risk_index_plot", width = "100%", height = "300px")
+      ),
+
       hr(),
       
       h4("2) Government effectiveness and control of corruption"),
       
-      plotOutput("fgi_plot", height = "300px", width = "600px"),
-      
-      plotOutput("cpi_plot", height = "300px", width = "600px"),
-      
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("fgi_plot", width = "100%", height = "300px")
+      ),
+
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("cpi_plot", width = "100%", height = "300px")
+      ),
+
       # plotOutput("gov_effectiveness_plot", height = "300px"),
       # plotOutput("ctrl_corruption_plot", height = "300px"),
       
@@ -142,16 +142,25 @@ ui <- fluidPage(
       
       h4("3) ODA as percent of recipient GNI"),
       
-      plotOutput("oda_gni_plot", height = "300px", width = "600px"),
-      
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("oda_gni_plot", width = "100%", height = "300px")
+      ),
+
       hr(),
       
       h4("4) Non-state actors and private sector"),
       
-      plotOutput("ccsi_plot", height = "300px", width = "600px"),
-      
-      plotOutput("bready_resolution_plot", height = "300px", width = "600px"),
-      
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("ccsi_plot", width = "100%", height = "300px")
+      ),
+  
+      div(
+        style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
+        girafeOutput("bready_resolution_plot", width = "100%", height = "300px")
+      ),
+
       hr(),
 
       downloadButton(
@@ -160,8 +169,6 @@ ui <- fluidPage(
         class = "btn-success",
         style = "width: 100%; margin-top: 20px;"
       )
-    )
-  )
 )
 
 # Server
@@ -186,7 +193,6 @@ server <- function(input, output, session) {
   ccsi_data <- reactiveVal(NULL)
   bready_resolution_data <- reactiveVal(NULL)
   
-
   # Fetch data when button is clicked
   observeEvent(input$fetch_data, {
     req(input$main_country, input$years, hdr_api_key)
@@ -466,7 +472,7 @@ server <- function(input, output, session) {
 
 
   # A_2_Elect. Democracy Plot
-  output$elect_plot <- renderPlot({
+  output$elect_plot <- renderGirafe({
     req(elect_data())
 
     df_elect <- elect_data() |>
@@ -477,9 +483,11 @@ server <- function(input, output, session) {
 
     # country <- get_country_name()
 
-    draw_plot(df_elect, main_country, nyears, "Electoral Democracy Index", v_dem)
+    draw_plot_girafe(df_elect, main_country, nyears, "Electoral Democracy Index", v_dem)
 
-  }, res = 96)
+  }
+  # res = 96
+  )
 
 
   # A_3_Civic Summary text
@@ -500,7 +508,7 @@ server <- function(input, output, session) {
   # })
 
   # A_3_Civil Liberties Plot
-  output$civil_lib_plot <- renderPlot({
+  output$civil_lib_plot <- renderGirafe({
     req(civil_lib_data())
 
     df <- civil_lib_data() |>
@@ -511,13 +519,13 @@ server <- function(input, output, session) {
 
     # country <- get_country_name()
 
-    draw_plot(df, main_country, nyears, "Politiical civil liberties index", v_dem)
+    draw_plot_girafe(df, main_country, nyears, "Political civil liberties index", v_dem)
 
-  }, res = 96)
+  })
   
  
   # A_4_Rule of law  Plot
-  output$rol_plot <- renderPlot({
+  output$rol_plot <- renderGirafe({
     req(rol_data())
     
     df_rol <- rol_data() |>
@@ -528,12 +536,12 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_rol, main_country, nyears, "Rule of Law Index", v_dem)
+    draw_plot_girafe(df_rol, main_country, nyears, "Rule of Law Index", v_dem)
     
-  }, res = 96)
+  })
   
   # B_1_GDP growth Plot
-  output$gdp_growth_plot <- renderPlot({
+  output$gdp_growth_plot <- renderGirafe({
     req(gdp_growth_data())
     
     df_gdp_growth <- gdp_growth_data() |>
@@ -544,9 +552,9 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_gdp_growth, main_country, nyears, "GDP Growth (% change)", "World Development Indicators (WDI)")
+    draw_plot_girafe(df_gdp_growth, main_country, nyears, "GDP Growth (% change)", "World Development Indicators (WDI)")
     
-  }, res = 96)
+  })
   
   
   # B_2_HDI Summary text
@@ -567,7 +575,7 @@ server <- function(input, output, session) {
   # })
 
   # B_2_HDI Plot
-  output$hdi_plot <- renderPlot({
+  output$hdi_plot <- renderGirafe({
     
     req(hdi_data())
     
@@ -579,12 +587,12 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_hdi, main_country, nyears, "Human Development Index (HDI)", undp)
+    draw_plot_girafe(df_hdi, main_country, nyears, "Human Development Index (HDI)", undp)
     
-  }, res = 96)
+  })
   
   # B_2_GII Plot
-  output$gii_plot <- renderPlot({
+  output$gii_plot <- renderGirafe({
     
     req(gii_data())
     
@@ -596,12 +604,12 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_gii, main_country, nyears, "Gender Inequality Index", undp)
+    draw_plot_girafe(df_gii, main_country, nyears, "Gender Inequality Index", undp)
     
-  }, res = 96)
+  })
   
   # B_3_Climate Change Plot
-  output$climate_change_plot <- renderPlot({
+  output$climate_change_plot <- renderGirafe({
     req(climate_change_data())
     
     df_climate_change <- climate_change_data() |>
@@ -612,12 +620,12 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_climate_change, main_country, nyears, "Climate Change Risk Index", "INFORM")
+    draw_plot_girafe(df_climate_change, main_country, nyears, "Climate Change Risk Index", "INFORM")
     
-  }, res = 96)
+  })
   
   # C_1_Risk Index Plot
-  output$risk_index_plot <- renderPlot({
+  output$risk_index_plot <- renderGirafe({
     req(risk_index_data())
     
     df_risk_index <- risk_index_data() |>
@@ -628,12 +636,12 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_risk_index, main_country, nyears, "Risk Index", "INFORM")
+    draw_plot_girafe(df_risk_index, main_country, nyears, "Risk Index", "INFORM")
     
-  }, res = 96)
+  })
   
   # C_2_Corruption perceptions Plot
-  output$cpi_plot <- renderPlot({
+  output$cpi_plot <- renderGirafe({
     req(cpi_data())
     
     df_cpi <- cpi_data() |>
@@ -644,12 +652,12 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_cpi, main_country, nyears, "Corruption Perceptions Index", "Transparency International")
+    draw_plot_girafe(df_cpi, main_country, nyears, "Corruption Perceptions Index", "Transparency International")
     
-  }, res = 96)
+  })
   
   # C_2_Functioning government index Plot
-  output$fgi_plot <- renderPlot({
+  output$fgi_plot <- renderGirafe({
     req(fgi_data())
     
     df_fgi <- fgi_data() |>
@@ -660,9 +668,9 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_fgi, main_country, nyears, "Functioning Government Index", "Economist Intelligence Unit processed by Our World in Data")
+    draw_plot_girafe(df_fgi, main_country, nyears, "Functioning Government Index", "Economist Intelligence Unit processed by Our World in Data")
     
-  }, res = 96)
+  })
   # # C_2_Government effectiveness Plot
   # output$gov_effectiveness_plot <- renderPlot({
   #   req(gov_effectiveness_data())
@@ -699,7 +707,7 @@ server <- function(input, output, session) {
   # })
 
   # C_3_ODA percent of GNI Plot
-  output$oda_gni_plot <- renderPlot({
+  output$oda_gni_plot <- renderGirafe({
     req(oda_gni_data())
     
     df_oda_gni <- oda_gni_data() |>
@@ -710,12 +718,12 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_oda_gni, main_country, nyears, "Net ODA received (% of GNI)", "OECD")
+    draw_plot_girafe(df_oda_gni, main_country, nyears, "Net ODA received (% of GNI)", "OECD")
     
-  }, res = 96)
+  })
   
   # C_4_Core Civil Society Index
-  output$ccsi_plot <- renderPlot({
+  output$ccsi_plot <- renderGirafe({
     req(ccsi_data())
     
     df_ccsi <- ccsi_data() |>
@@ -726,12 +734,12 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_ccsi, main_country, nyears, "Civil Society Participation Index", v_dem)
+    draw_plot_girafe(df_ccsi, main_country, nyears, "Civil Society Participation Index", v_dem)
     
-  }, res = 96)
+  })
   
   # C_4_B-Ready Dispute Resolution
-  output$bready_resolution_plot <- renderPlot({
+  output$bready_resolution_plot <- renderGirafe({
     req(bready_resolution_data())
     
     df_bready_resolution <- bready_resolution_data() |>
@@ -742,9 +750,9 @@ server <- function(input, output, session) {
     
     # country <- get_country_name()
     
-    draw_plot(df_bready_resolution, main_country, nyears, "B-READY: Dispute Resolution", "B-READY")
+    draw_plot_girafe(df_bready_resolution, main_country, nyears, "B-READY: Dispute Resolution", "B-READY")
     
-  }, res = 96)
+  })
   
   # Download handler for Word document
   output$download_report <- downloadHandler(
@@ -754,11 +762,6 @@ server <- function(input, output, session) {
     contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     content = function(file) {
       
-      req(hdi_data())
-      df_hdi <- hdi_data() |>
-        left_join(country_tibble, by = "code")
-      #hdi <- hdi_classification()
-
       req(civil_lib_data())
       df_civil_lib <- civil_lib_data() |>
         left_join(country_tibble, by = "code")
@@ -783,6 +786,11 @@ server <- function(input, output, session) {
       req(gni_pc_data())
       df_gni_pc <- gni_pc_data() |>
         left_join(country_tibble, by = "code")
+      
+      req(hdi_data())
+      df_hdi <- hdi_data() |>
+        left_join(country_tibble, by = "code")
+      #hdi <- hdi_classification()
       
       req(gii_data())
       df_gii <- gii_data() |>
@@ -1147,6 +1155,30 @@ server <- function(input, output, session) {
         body_add_par("2) Human capital, poverty and inequalities", style = "Heading 2_green")
       
       # Create and save the plot
+      temp_plot_hdi <- tempfile(fileext = ".png")
+
+      nyears <- length(unique(df_hdi$year))
+      main_country <- input$main_country
+
+      ggsave(temp_plot_hdi, plot = draw_plot(df_hdi, main_country, nyears, "Human Development Index (HDI)", undp), width = 6, height = 1.8, dpi = 200)
+
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_hdi, width = 6, height = 1.8, style = "Compact")
+
+      # Create and save the categories plot
+      temp_plot_hdi_cat <- tempfile(fileext = ".png")
+      
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_hdi_cat, plot = draw_plot_categories_noval(df_hdi, main_country, hdi_label, hdi_min, hdi_max, hdi_color), width = 6, height = 0.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_par("HDI classification:", style = "Normal") |>
+        body_add_img(src = temp_plot_hdi_cat, width = 6, height = 0.5, style = "Compact")
+    
+      # Create and save the plot
       temp_plot_gii <- tempfile(fileext = ".png")
       
       nyears <- length(unique(df_gii$year))
@@ -1177,33 +1209,9 @@ server <- function(input, output, session) {
             fp_p = fp_par(word_style = "Caption_Note")
           )
         ) 
-        # body_add_par("The Gender Inequality Index covers the dimensions of reproductive health, 
-        # empowerment and economic status. It ranges from 0 (very low inequality) 
-        #              to 10 (very high inequality).", style = "Caption_Note")
-
-      # Create and save the plot
-      temp_plot_hdi <- tempfile(fileext = ".png")
-
-      nyears <- length(unique(df_hdi$year))
-      main_country <- input$main_country
-
-      ggsave(temp_plot_hdi, plot = draw_plot(df_hdi, main_country, nyears, "Human Development Index (HDI)", undp), width = 6, height = 1.8, dpi = 200)
-
-      # Add plot to document
-      doc <- doc |>
-        body_add_img(src = temp_plot_hdi, width = 6, height = 1.8, style = "Compact")
-
-      # Create and save the categories plot
-      temp_plot_hdi_cat <- tempfile(fileext = ".png")
-      
-      main_country <- input$main_country
-      
-      ggsave(temp_plot_hdi_cat, plot = draw_plot_categories_noval(df_hdi, main_country, hdi_label, hdi_min, hdi_max, hdi_color), width = 6, height = 0.5, dpi = 200)
-      
-      # Add plot to document
-      doc <- doc |>
-        body_add_par("HDI classification:", style = "Normal") |>
-        body_add_img(src = temp_plot_hdi_cat, width = 6, height = 0.5, style = "Compact")
+      # body_add_par("The Gender Inequality Index covers the dimensions of reproductive health, 
+      # empowerment and economic status. It ranges from 0 (very low inequality) 
+      #              to 10 (very high inequality).", style = "Caption_Note")
       
  
      # B.2 Analysis and Consequences
@@ -1570,8 +1578,9 @@ server <- function(input, output, session) {
       # D) Additional fields of observation
       
       doc <- doc |>
-        body_add_par("D) OPTIONAL: Additional fields of observation", style = "heading 1") |>
+        body_add_par("D) OPTIONAL", style = "heading 1") |>
         body_add_par("(in IC programme sectors)", style = "Non_Bullet_Instruction") |>
+        body_add_par("Additional fields of observation", style = "heading 2") |>
         body_add_par("", style = "Normal") |> 
         body_add_par("Analysis", style = "heading 3") |> 
         text_input_field(placeholder = "Add text here") |> 
