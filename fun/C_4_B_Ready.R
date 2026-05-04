@@ -49,3 +49,8 @@ get_wb_c_4_bready_resolution <- function(countries, years) {
     return(NULL)
   }
 }
+
+bready_label = c("Very Weak", "Weak", "Moderate", "Strong", "Very Strong")
+bready_min   = c(0,      35,         50,      65,      80)
+bready_max   = c(35,     50,         65,      80,      100)
+bready_color = c("#823a53", "#ef7d00", "#f2a758", "#60b3b1", "#519795")

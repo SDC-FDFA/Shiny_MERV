@@ -15,10 +15,14 @@ source("comments.R")
 # UI
 ui <- page_sidebar(
       title = "International Cooperation (IC) Context Monitoring",
-      theme = bs_theme(bootswatch = "flatly", primary = "#519796"),
-      tags$head(
-        tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
-      ),
+      theme = bs_theme(bootswatch = "flatly", 
+                       heading_font = font_collection("Arial"),
+                       base_font = font_collection("Arial"), 
+                       primary = "#519796") |> 
+        bs_add_rules(paste(readLines("www/styles.css"), collapse = "\n")),
+      # tags$head(
+      #   tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
+      # ),
       
       sidebar = sidebar(
         width = 250,
@@ -36,8 +40,6 @@ ui <- page_sidebar(
       hr(),
 
       h4("2) Domestic Political Stability"),
-
-      hr(),
 
       div(
         style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
@@ -63,8 +65,6 @@ ui <- page_sidebar(
       
       h4("4) Rule of law, independence of justice, division of power"),
       
-      hr(),
-  
       div(
         style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
         girafeOutput("rol_plot", width = "100%", height = "300px")
@@ -899,7 +899,7 @@ server <- function(input, output, session) {
                       style = "Subtitle_red") |> 
 
         text_input_field(placeholder = "Add text here") |> 
-        body_add_fpar(value = comment_fun("i.3 For political dialogue and programme advocacy work", i_2), 
+        body_add_fpar(value = comment_fun("i.3 For political dialogue and programme advocacy work", i_3), 
                       style = "Subtitle_blue") |> 
         text_input_field(placeholder = "Add text here") |>
         body_add_break()
@@ -1538,13 +1538,24 @@ server <- function(input, output, session) {
         body_add_img(src = temp_plot_bready, width = 6, height = 1.8, style = "Compact")
       
       
+      # Create and save the categories plot
+      temp_plot_bready_cat <- tempfile(fileext = ".png")
+      
+      main_country <- input$main_country
+      
+      ggsave(temp_plot_bready_cat, plot = draw_plot_categories_noval(df_bready_resolution, main_country, bready_label, bready_min, bready_max, bready_color), width = 6, height = 0.5, dpi = 200)
+      
+      # Add plot to document
+      doc <- doc |>
+        body_add_img(src = temp_plot_bready_cat, width = 6, height = 0.5, style = "Compact")
+      
       
       doc <- doc |>
         body_add_fpar(
           fpar(
             ftext("The "),
             hyperlink_ftext(
-              text = "B-READY: Dispute Resolution",
+              text = "The categories shown are indicative (cut-off values are not official). B-READY: Dispute Resolution",
               href = "https://data.worldbank.org/indicator/IC.BRE.DR.OS",
               prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 9)
             ),

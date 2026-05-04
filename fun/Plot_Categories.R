@@ -7,7 +7,14 @@ draw_plot_categories <- function(x, main_c, cat_labels, cat_min, cat_max, cat_co
       filter(code == main_c) |> 
       pull(round(value, digits = 2))
   
-  categories <- data.frame(
+  if (length(indicator_value) == 0 || all(is.na(indicator_value))) {
+    ggplot() +
+      annotate("text", x = 0.5, y = 0.5,
+               label = "No category data availble",
+               size = 3.5, color = "grey50", hjust = 0.5) +
+      theme_void()
+  } else {
+    categories <- data.frame(
     label = cat_labels,
     min   = cat_min,
     max   = cat_max,
@@ -56,7 +63,7 @@ draw_plot_categories <- function(x, main_c, cat_labels, cat_min, cat_max, cat_co
       axis.ticks.length = unit(3, "pt"),
       plot.margin  = margin(t = 0, r = 10, b = 0, l = 10)
     )
-  
+  }
 }
 
 # Version without a value label
@@ -68,6 +75,14 @@ draw_plot_categories_noval <- function(x, main_c, cat_labels, cat_min, cat_max, 
     filter(code == main_c) |> 
     pull(round(value, digits = 2))
   
+  if (length(indicator_value) == 0 || all(is.na(indicator_value))) {
+    ggplot() +
+      annotate("text", x = 0.5, y = 0.5,
+               label = "No category data availble",
+               size = 3.5, color = "grey50", hjust = 0.5) +
+      theme_void()
+  } else {
+    
   categories <- data.frame(
     label = cat_labels,
     min   = cat_min,
@@ -117,5 +132,5 @@ draw_plot_categories_noval <- function(x, main_c, cat_labels, cat_min, cat_max, 
       axis.ticks.length = unit(3, "pt"),
       plot.margin  = margin(t = 0, r = 10, b = 0, l = 10)
     )
-  
+  }
 }

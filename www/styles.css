@@ -4,18 +4,55 @@
     font-weight: 700 !important;
   }
 
+/* Font */
+body {
+  font-family: Arial, sans-serif;
+}
+
 /* Section headers */
-  h3 {
-    margin-top: 1.5rem;
-    font-size: 1.1rem;
+h3 {
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    font-size: 1.2rem;
     color: #333;
   }
 
 h4 {
-  font-size: 0.95rem;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+  margin-top: 0.2rem;
   color: #555;
 }
 
+hr {
+    margin-top: 0rem;
+    margin-bottom: 0rem;
+    color: #333;
+  }
+  
+  
+/* Input labels ("Main Country:", "Comparison Countries:", "Years:") */
+.sidebar .control-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* selectInput and checkboxGroupInput option text */
+.sidebar .selectize-input,
+.sidebar .checkbox label,
+.sidebar select {
+  font-size: 0.8rem;
+}
+
+/* checkboxGroupInput inline items (your Years row) */
+.sidebar .shiny-input-checkboxgroup label {
+  font-size: 0.8rem;
+}
+
+/* Action button */
+.sidebar .btn {
+  font-size: 0.85rem;
+}
 /* Card headers */
   .card-header {
     font-weight: 600;

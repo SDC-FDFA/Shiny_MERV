@@ -53,7 +53,7 @@ country_list <- c(
   "Niger" = "NER",
   "Nigeria" = "NGA",
   "N. Macedonia" = "MKD",
-  "OPT" = "PSE",
+  "Occupied Palestinian Territories" = "PSE",
   "Pakistan" = "PAK",
   "Peru" = "PER",
   "Philippines" = "PHL",

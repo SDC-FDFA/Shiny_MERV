@@ -8,16 +8,15 @@ undp <- "UNDP, Human Development Report (2025) – with minor processing by Our 
 
 i_1 <- "based on initial Cooperation Programme scenarios and the assessed 'Consequences for the programme operations' in part 'ii. Analyses'"
 
-i_2 <- "based on 'Consequences for the programme operations in part ii. Analyses
-• Synthesize the shifts, if any, described under 'b) Consequences for the progrmame operations' of each chapter of part ii. Analyses with the focus on: 1) CoPr scenario; 2) CoPr assumptions and risks (RDM results framework); or 3) Major/severe project portfolio risks (SDC Projects risks).
+i_2 <- "• Synthesize the shifts, if any, described under 'b) Consequences for the programme operations' of each chapter of part ii. Analyses with the focus on: 1) CoPr scenario; 2) CoPr assumptions and risks (RDM results framework); or 3) Major/severe project portfolio risks (SDC Projects risks).
 • Describe how these shifts, if any, affect the programme implementation, and how the latter must be strategically or operationally adjusted and steered.
 • If none of the above, leave empty
 Optional: updates of interim assessments
 "
-i_3 <- "Describe how the described shifts under 'b) Consequences for the programme operations' 
-of each chapter of part ii. Analyses shifts, if any, call for specific/additional
+i_3 <- "• Describe how these shifts under 'b) Consequences for the programme operations' 
+of each chapter of part ii. Analyses, if any, call for specific/additional
 political dialogue and programme advocacy work
-If none, leave empty
+• If none, leave empty
 Optional: updates of interim assessments" 
 
 if_none_empty <- "If none of the above, leave empty"
