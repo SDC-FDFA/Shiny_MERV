@@ -20,7 +20,7 @@ bready_resolution_data_reg <- reactiveVal(NULL)
 
 # Fetch data when button is clicked
 observeEvent(input$fetch_data, {
-  req(input$years, hdr_api_key)
+  req(input$years)
   
   countries <- c(input$comparison_countries)
   years <- as.numeric(input$years)
