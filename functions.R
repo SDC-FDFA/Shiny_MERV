@@ -79,8 +79,8 @@ country_list <- c(
   "Turkey" = "TUR",
   "Ukraine" = "UKR",
   "Uzbekistan" = "UZB",
-  "Vietnam" = "VNM",
   "Venezuela" = "VEN",
+  "Vietnam" = "VNM",
   "Yemen" = "YEM",
   "Zambia" = "ZMB",
   "Zimbabwe" = "ZWE"
@@ -118,6 +118,5 @@ source("fun/C_4_B_Ready.R")
 source("fun/Plot.R")
 source("fun/Plot_Categories.R")
 
-# The Section Collapse
-source("fun/Sections_Collapse.R")
+
 

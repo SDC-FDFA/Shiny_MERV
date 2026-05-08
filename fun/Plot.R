@@ -203,6 +203,118 @@ draw_plot_girafe <- function(x, main_c, nyears, full_title, full_caption) {
   )
 }
 
+draw_plot_girafe_reg <- function(x, nyears, full_title, full_caption) {
+  
+  countries <- unique(x$country)
+  palette   <- setNames(
+    brewer.pal(max(3, length(countries)), "Set2")[seq_along(countries)],
+    countries
+  )
+  
+  x <- x |>
+    mutate(
+      linewidth  = 0.8,
+      line_color = palette[country],
+      line_alpha = 0.7,
+      value      = round(value, digits = 2)
+    )
+  
+  p <- ggplot(x, aes(x = year, y = value, group = country)) +
+    geom_line_interactive(
+      aes(
+        color   = line_color,
+        size    = linewidth,
+        alpha   = line_alpha,
+        data_id = country       # still needed for the dim-others effect
+      )
+    ) +
+    geom_point_interactive(
+      aes(
+        tooltip = paste0("<b>", country, "</b><br>Year: ", year, "<br>Value: ", value),
+        data_id = country,      # same data_id links hover state to the line
+        color   = line_color
+      ),
+      size  = 2,    # small but hittable
+      alpha = 0     # invisible — only the tooltip matters
+    ) +
+    scale_color_identity() +
+    scale_size_identity() +
+    scale_alpha_identity() +
+    # geom_text_repel is NOT interactive-capable; use plain geom_text or a
+    # geom_label_interactive for the highlighted country, repel for others
+    geom_label_interactive(
+      data = filter(x, year == max(year)),
+      aes(
+        label   = paste0(country, ": ", value),
+        tooltip = paste0("<b>", country, "</b><br>Value: ", value),
+        data_id = country,
+        color    = line_color
+      ),
+      fontface = "bold",
+      size     = 9 / ggplot2::.pt,
+      hjust    = 0,
+      nudge_x  = 0.5,
+      fill     = NA,
+      label.size = 0   # remove label box border
+    ) +
+    labs(
+      title    = str_wrap(full_title, width = 60),
+      caption  = paste0("Source: ", full_caption)
+    ) +
+    scale_x_continuous(
+      breaks = scales::breaks_pretty(n = nyears),
+      limits = c(NA, max(x$year) + 2)
+    ) +
+    scale_y_continuous(
+      expand = expansion(c(0.1, 0.1)),
+      breaks = scales::breaks_pretty(n = 4),
+      labels = scales::label_number(scale_cut = scales::cut_short_scale())
+    ) +
+    coord_cartesian(clip = "off") +
+    theme(
+      panel.background   = element_rect(fill = "white"),
+      panel.grid.major.x = element_blank(),
+      axis.ticks         = element_blank(),
+      strip.background   = element_rect(colour = "white", fill = "white"),
+      axis.text.x        = element_text(size = 8, family = "arial"),
+      axis.text.y        = element_text(size = 8, family = "arial"),
+      axis.line.x        = element_line(colour = "black"),
+      axis.line.y        = element_line(colour = "black"),
+      axis.title.x       = element_blank(),
+      axis.title.y       = element_blank(),
+      text               = element_text(size = 8, family = "arial"),
+      strip.text         = element_text(size = 10, face = "bold"),
+      title              = element_text(size = 9, family = "arial", face = "bold"),
+      plot.caption       = element_text(
+        size = 7, family = "arial", face = "plain", color = "#888888",
+        margin = margin(t = 0, r = 0, b = 0, l = 0)
+      ),
+      legend.position    = "none",
+      legend.title       = element_blank(),
+      legend.box         = element_blank(),
+      panel.grid.major.y = element_line(color = "#f0f0f0", linewidth = 0.3),
+      plot.title         = element_text(size = 10, face = "bold"),
+      plot.subtitle      = element_text(size = 8, color = "#555555"),
+      plot.margin        = margin(5, 30, 0, 10)
+    )
+  
+  # Wrap in girafe for Shiny
+  girafe(
+    ggobj = p,
+    width_svg = 9,
+    height_svg = 3,
+    options = list(
+      opts_hover(css = "stroke-width: 2.5; opacity: 1;"),
+      opts_hover_inv(css = "opacity: 0.15;"),   # dim non-hovered lines
+      opts_tooltip(
+        css = "background:#fff; border:1px solid #ccc; padding:6px 10px;
+               border-radius:4px; font-family:arial; font-size:12px;",
+        use_fill = TRUE
+      ),
+      opts_sizing(rescale = TRUE)
+    )
+  )
+}
 
 # draw_plot_backup <- function(x, main_c, nyears, full_title, full_caption) {
 #   #message("main_c: '", main_c, "'; countries: ", paste(unique(x$country), collapse = ", "))
