@@ -1,5 +1,7 @@
 # Reactive value to store data
+fsi_data <- reactiveVal(NULL)
 civil_lib_data <- reactiveVal(NULL)
+stability_data <- reactiveVal(NULL)
 rol_data <- reactiveVal(NULL)
 elect_data <- reactiveVal(NULL)
 regime_data <- reactiveVal(NULL)
@@ -23,6 +25,34 @@ observeEvent(input$fetch_data, {
   
   countries <- c(input$main_country, input$comparison_countries)
   years <- as.numeric(input$years)
+  
+  # A_1_Fetch Fragile States index data
+  showNotification("Fetching Fragile States index data...", type = "message", duration = NULL, id = "fetch_fsi")
+  
+  fsi_df <- get_a_1_fs_index(countries, years)
+  
+  if (!is.null(fsi_df) && nrow(fsi_df) > 0) {
+    fsi_data(fsi_df)
+    removeNotification(id = "fetch_fsi")
+    showNotification("Fragile States index data fetched successfully!", type = "message", duration = 2)
+  } else {
+    removeNotification(id = "fetch_fsi")
+    showNotification("Failed to fetch Fragile States index data.", type = "warning", duration = 5)
+  }
+  
+  # A_2_Fetch Political Stability data
+  showNotification("Fetching Political Stability index data...", type = "message", duration = NULL, id = "fetch_stability")
+  
+  stability_df <- get_wb_stability_data(countries, years)
+  
+  if (!is.null(stability_df) && nrow(stability_df) > 0) {
+    stability_data(stability_df)
+    removeNotification(id = "fetch_stability")
+    showNotification("Political Stability index data fetched successfully!", type = "message", duration = 2)
+  } else {
+    removeNotification(id = "fetch_stability")
+    showNotification("Failed to fetch Political Stability index data.", type = "warning", duration = 5)
+  }
   
   # A_2_Fetch electoral democracy data
   showNotification("Fetching electoral democracy index data...", type = "message", duration = NULL, id = "fetch_elect")
@@ -155,7 +185,7 @@ observeEvent(input$fetch_data, {
   # C_1_Risk Index data
   showNotification("Fetching risk index data...", type = "message", duration = NULL, id = "fetch_risk_index")
   
-  c_1_risk_index_df <- get_c_1_risk_index(countries, years)
+  c_1_risk_index_df <- get_wb_c_1_risk_index(countries, years)
   
   if (!is.null(c_1_risk_index_df) && nrow(c_1_risk_index_df) > 0) {
     risk_index_data(c_1_risk_index_df)

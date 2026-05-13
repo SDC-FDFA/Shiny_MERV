@@ -4,23 +4,40 @@ panel_about <- nav_panel(
   # your documentation content here
   div(class = "section-header", "A) Political System"),
   hr(),
+  div(class = "plot-card-header", "1) International political context"),
+  tags$p(
+    "The ",
+    tags$a("Fragile States Index",
+           href = "https://fragilestatesindex.org/global-data/",
+           target = "_blank"),
+    " ranges from 0 (least fragile) to 120 (most fragile). Published by the The Fund for Peace."
+  ),
+  hr(),
   div(class = "plot-card-header", "2) Domestic Political Stability"),
   tags$p(
     "The ",
-    tags$a("Electoral Democracy Index",
-           href = "https://ourworldindata.org/grapher/electoral-democracy-index",
+    tags$a("Political Stability Index",
+           href = "https://data360.worldbank.org/en/indicator/GOV_WGI_PV",
            target = "_blank"),
-    " ranges from 0 (least democratic) to 1 (most democratic). The same source also provides information on ",
-    tags$a("Regimes of the World",
-           href = "https://ourworldindata.org/regimes-of-the-world-data",
-           target = "_blank"),
-    ". Classifications as used by ",
-    tags$a("V-DEM",
-           href = "https://v-dem.net/",
-           target = "_blank"),
-    "."
+    " Governance score ranges from 0 (very low stability) to 100 (very high stability)."
   ),
   hr(),
+  # tags$p(
+  #   "The ",
+  #   tags$a("Electoral Democracy Index",
+  #          href = "https://ourworldindata.org/grapher/electoral-democracy-index",
+  #          target = "_blank"),
+  #   " ranges from 0 (least democratic) to 1 (most democratic). The same source also provides information on ",
+  #   tags$a("Regimes of the World",
+  #          href = "https://ourworldindata.org/regimes-of-the-world-data",
+  #          target = "_blank"),
+  #   ". Classifications as used by ",
+  #   tags$a("V-DEM",
+  #          href = "https://v-dem.net/",
+  #          target = "_blank"),
+  #   "."
+  # ),
+  # hr(),
   div(class = "plot-card-header", "3) Civic and political rights, voice and media"),
   tags$p(
     "The ",

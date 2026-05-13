@@ -2,6 +2,41 @@ get_country_name <- reactive({
   names(country_list)[country_list == input$main_country]
 })
 
+# A_1_Fragile States Index Plot
+output$fsi_plot <- renderGirafe({
+  req(fsi_data())
+  
+  df_fsi <- fsi_data() |>
+    left_join(country_tibble, by = "code")
+  
+  nyears <- length(unique(df_fsi$year))
+  main_country <- input$main_country
+  
+  # country <- get_country_name()
+  
+  draw_plot_girafe(df_fsi, main_country, nyears, "Fragile States Index", "Fund for Peace")
+  
+}
+# res = 96
+)
+
+# A_2_Political Stability Plot
+output$stability_plot <- renderGirafe({
+  req(stability_data())
+  
+  df_stability <- stability_data() |>
+    left_join(country_tibble, by = "code")
+  
+  nyears <- length(unique(df_stability$year))
+  main_country <- input$main_country
+  
+  # country <- get_country_name()
+  
+  draw_plot_girafe(df_stability, main_country, nyears, "Political Stability Index", wb_wgi)
+  
+}
+# res = 96
+)
 
 # A_2_Elect. Democracy Plot
 output$elect_plot <- renderGirafe({

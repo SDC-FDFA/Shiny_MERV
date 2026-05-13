@@ -1,6 +1,6 @@
 
-# INFORM Risk Index
-get_wb_c_1_risk_index <- function(countries, years) {
+
+get_wb_stability_data <- function(countries, years) {
   wb_base_url <- "https://data360api.worldbank.org"
   wb_endpoint <- "/data360/data"
   
@@ -10,8 +10,8 @@ get_wb_c_1_risk_index <- function(countries, years) {
   
   req_wb <- request(paste0(wb_base_url, wb_endpoint)) |>
     req_url_query(
-      DATABASE_ID = "DRMKC_INFORM",
-      INDICATOR = "INFORM_OVRL",
+      DATABASE_ID = "WB_WGI",
+      INDICATOR = "GOV_WGI_PV",
       REF_AREA = countries,
       #   TIME_PERIOD = years,
       .multi = "comma"
@@ -33,6 +33,7 @@ get_wb_c_1_risk_index <- function(countries, years) {
       resp_body_json()
     data_values <- response_data$value |>
       bind_rows() |>
+      filter(COMP_BREAKDOWN_1 == "WGI_SC") |> 
       filter(TIME_PERIOD %in% years) |>
       select(OBS_VALUE, REF_AREA, TIME_PERIOD) |>
       rename(
@@ -50,9 +51,10 @@ get_wb_c_1_risk_index <- function(countries, years) {
   }
 }
 
-risk_index_label = c("Very Low", "Low", "Medium", "High", "Very High")
-risk_index_min   = c(0,      2.3,         3.5,      5.3,      6.9)
-risk_index_max   = c(2.3,     3.5,         5.3,      6.9,      10)
-risk_index_color = c("#519795" , "#60b3b1", "#f2a758", "#ef7d00", "#823a53")
 
+
+stability_label = c("Very Low", "Low", "Moderate", "High")
+stability_min   = c(0,      25,         50,      75)
+stability_max   = c(25,     50,         75,      100)
+stability_color = c("#823a53", "#ef7d00", "#60b3b1", "#519795")
 

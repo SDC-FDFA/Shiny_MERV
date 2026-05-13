@@ -21,10 +21,22 @@ panel_ic_monitoring <- nav_panel(
   
   div(
     class = "plot-card",
+    div(class = "plot-card-header", "1) International political context"),
+    div(
+      class = "plot-card-body",
+      withSpinner(girafeOutput("fsi_plot", width = "100%", height = "300px"),
+                  type = 7, color.background = "#FFFFFF", color = "#519796")
+    )
+  ),
+  
+  hr(),
+  
+  div(
+    class = "plot-card",
     div(class = "plot-card-header", "2) Domestic Political Stability"),
     div(
       class = "plot-card-body",
-      withSpinner(girafeOutput("elect_plot", width = "100%", height = "300px"),
+      withSpinner(girafeOutput("stability_plot", width = "100%", height = "300px"),
                   type = 7, color.background = "#FFFFFF", color = "#519796")
     )
   ),

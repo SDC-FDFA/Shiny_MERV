@@ -3,6 +3,7 @@
 # Captions
 v_dem <- "V-Dem (2026) – processed by Our World in Data"
 undp <- "UNDP, Human Development Report (2025) – with minor processing by Our World in Data"
+wb_wgi <- "World Bank - Worldwide Governance Indicators"
 
 # Summarised contents
 

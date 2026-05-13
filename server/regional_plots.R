@@ -1,4 +1,40 @@
 
+# A_1_Fragile States Index Plot
+output$fsi_plot_reg <- renderGirafe({
+  req(fsi_data_reg())
+  
+  df_fsi <- fsi_data_reg() |>
+    left_join(country_tibble, by = "code")
+  
+  nyears <- length(unique(df_fsi$year))
+  main_country <- input$main_country
+  
+  # country <- get_country_name()
+  
+  draw_plot_girafe_reg(df_fsi, nyears, "Fragile States Index", "Fund for Peace")
+  
+}
+# res = 96
+)
+
+# A_2_Political Stability Plot
+output$stability_plot_reg <- renderGirafe({
+  req(stability_data_reg())
+  
+  df_stability <- stability_data_reg() |>
+    left_join(country_tibble, by = "code")
+  
+  nyears <- length(unique(df_stability$year))
+  main_country <- input$main_country
+  
+  # country <- get_country_name()
+  
+  draw_plot_girafe_reg(df_stability, nyears, "Political Stability Index", wb_wgi)
+  
+}
+# res = 96
+)
+
 # A_2_Elect. Democracy Plot
 output$elect_plot_reg <- renderGirafe({
   req(elect_data_reg())

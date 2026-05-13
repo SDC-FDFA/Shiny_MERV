@@ -91,7 +91,9 @@ country_tibble <- tibble(
   country = names(country_list)
 )
 
-# API Fun
+# API Funs
+source("fun/A_1_Fragile_States_Index.R")
+source("fun/A_2_Political_Stability_Index.R")
 source("fun/A_2_Deliberative_Dem_Index.R")
 source("fun/A_2_Electoral_Dem_Index.R")
 source("fun/A_2_Regime_Type.R")
@@ -104,7 +106,7 @@ source("fun/B_1_Income_Classification.R")
 source("fun/B_2_HDI.R")
 source("fun/B_2_Gender_Inequality_Index.R")
 source("fun/B_3_Climate_Change.R")
-source("fun/C_1_Risk_Index_patch.R")
+source("fun/C_1_Risk_Index.R")
 source("fun/C_2_CPI.R")
 source("fun/C_2_Functioning_Gov_Index.R")
 source("fun/C_2_Government_Effectiveness.R")
@@ -114,7 +116,7 @@ source("fun/C_4_CCSI.R")
 source("fun/C_4_B_Ready.R")
 
 
-# One (or two) Plot to Rule Them ALl
+# Plotting
 source("fun/Plot.R")
 source("fun/Plot_Categories.R")
 

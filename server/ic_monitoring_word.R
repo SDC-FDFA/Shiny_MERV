@@ -6,6 +6,14 @@ output$download_report <- downloadHandler(
   contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   content = function(file) {
     
+    req(fsi_data())
+    df_fsi <- fsi_data() |>
+      left_join(country_tibble, by = "code")
+    
+    req(stability_data())
+    df_stability <- stability_data() |>
+      left_join(country_tibble, by = "code")
+    
     req(civil_lib_data())
     df_civil_lib <- civil_lib_data() |>
       left_join(country_tibble, by = "code")
@@ -86,17 +94,17 @@ output$download_report <- downloadHandler(
     ## i.1 Scenarios
     scenario_dev <- data.frame(
       `Remains unchanged` = "☐",
-      `Change with no implications to the programme` = "☐",
-      `Change with moderate implications to the programme` = "☐",
-      `Change with significant implications to the programme` = "☐", 
+      `Changes with no implications to the programme` = "☐",
+      `Changes with moderate implications to the programme` = "☐",
+      `Changes with significant implications to the programme` = "☐", 
       check.names = FALSE
     )
     ft_scenario_dev <- flextable(scenario_dev) |> 
       bold(part = "header") |>
       bg(j = "Remains unchanged", bg = "#e6e6e6ff") |> 
-      bg(j = "Change with no implications to the programme", bg = "#ccccccff") |> 
-      bg(j = "Change with moderate implications to the programme", bg = "#b3b3b3ff") |> 
-      bg(j = "Change with significant implications to the programme", bg = "#999999ff") |> 
+      bg(j = "Changes with no implications to the programme", bg = "#ccccccff") |> 
+      bg(j = "Changes with moderate implications to the programme", bg = "#b3b3b3ff") |> 
+      bg(j = "Changes with significant implications to the programme", bg = "#999999ff") |> 
       width(j = 1:4, width = 1.2) |> 
       fontsize(part = "header", size = 10) |> 
       align(align = "center", part = "all")
@@ -131,9 +139,9 @@ output$download_report <- downloadHandler(
     # Intro
     doc <- doc |>
       body_add_par("i. CONCLUSIONS", style = "Title_grey") |>
-      body_add_fpar(value = comment_fun("i.1 On scenario development", i_1), 
+      body_add_fpar(value = comment_fun("i.1 On context development", i_1), 
                     style = "Subtitle_green") |> 
-      body_add_par("Scenario development within the past 12 months:", style = "Non_Bullet_Instruction") |> 
+      body_add_par("Context changes within the past 12 months:", style = "Non_Bullet_Instruction") |> 
       
       body_add_flextable(ft_scenario_dev) |> 
       body_add_par("", style = "Normal") |> 
@@ -160,9 +168,43 @@ output$download_report <- downloadHandler(
     doc <- doc |>
       body_add_par("1) International political context", style = "Heading 2_blue")
     
+    # Create and save the fragile states plot
+    temp_plot_fsi <- tempfile(fileext = ".png")
+    
+    nyears <- length(unique(df_fsi$year))
+    main_country <- input$main_country
+    
+    ggsave(temp_plot_fsi, plot = draw_plot(df_fsi, main_country, nyears, "Fragile States Index", "Fund for Peace"), width = 6, height = 1.8, dpi = 200)
+    
+    # Add plot to document
+    doc <- doc |>
+      body_add_img(src = temp_plot_fsi, width = 6, height = 1.8, style = "Compact")
+    
+    # Create and save the categories plot
+    temp_plot_fsi_cat <- tempfile(fileext = ".png")
+    
+    main_country <- input$main_country
+    
+    ggsave(temp_plot_fsi_cat, plot = draw_plot_categories_noval(df_fsi, main_country, fsi_label, fsi_min, fsi_max, fsi_color), width = 6, height = 0.5, dpi = 200)
+    
+    # Add plot to document
+    doc <- doc |>
+      body_add_img(src = temp_plot_fsi_cat, width = 6, height = 0.5, style = "Compact")
     
     # International political context Analysis and Consequences
     doc <- doc |>
+      body_add_fpar(
+        fpar(
+          ftext("The "),
+          hyperlink_ftext(
+            text = "Fragile States Index",
+            href = "https://fragilestatesindex.org/global-data/",
+            prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 8)
+          ),
+          ftext(" ranges from 0 (least fragile) to 120 (most fragile). Published by the The Fund for Peace."),
+          fp_p = fp_par(word_style = "Caption_Note")
+        )
+      ) |> 
       # body_add_par("", style = "Normal") |>
       body_add_fpar(value = comment_fun("Analysis", analysis_pol), 
                     style = "heading 3") |>
@@ -178,52 +220,41 @@ output$download_report <- downloadHandler(
     doc <- doc |>
       body_add_par("2) Domestic political stability", style = "Heading 2_blue")
     
-    # Create and save the electoral democracy plot
-    temp_plot_elect <- tempfile(fileext = ".png")
+    # Create and save the political stability plot
+    temp_plot_stability <- tempfile(fileext = ".png")
     
-    nyears <- length(unique(df_elect$year))
+    nyears <- length(unique(df_stability$year))
     main_country <- input$main_country
     
-    ggsave(temp_plot_elect, plot = draw_plot(df_elect, main_country, nyears, "Electoral Democracy index", v_dem), width = 6, height = 1.8, dpi = 200)
+    ggsave(temp_plot_stability, plot = draw_plot(df_stability, main_country, nyears, "Political Stability index", wb_wgi), width = 6, height = 1.8, dpi = 200)
     
     # Add plot to document
     doc <- doc |>
-      body_add_img(src = temp_plot_elect, width = 6, height = 1.8, style = "Compact")
+      body_add_img(src = temp_plot_stability, width = 6, height = 1.8, style = "Compact")
     
     # Create and save the categories plot
-    temp_plot_regime_cat <- tempfile(fileext = ".png")
+    temp_plot_stability_cat <- tempfile(fileext = ".png")
     
     main_country <- input$main_country
     
-    ggsave(temp_plot_regime_cat, plot = draw_plot_categories_noval(df_regime, main_country, regime_label, regime_min, regime_max, regime_color), width = 6, height = 0.5, dpi = 200)
+    ggsave(temp_plot_stability_cat, plot = draw_plot_categories_noval(df_stability, main_country, stability_label, stability_min, stability_max, stability_color), width = 6, height = 0.5, dpi = 200)
     
     # Add plot to document
     doc <- doc |>
-      body_add_img(src = temp_plot_regime_cat, width = 6, height = 0.5, style = "Compact")
+      body_add_img(src = temp_plot_stability_cat, width = 6, height = 0.5, style = "Compact")
     
     
     # Domestic political stability Analysis and Consequences
     doc <- doc |>
       body_add_fpar(
         fpar(
-          ftext("The "),
+          ftext("The categories shown are indicative (cut-off values are not official). The "),
           hyperlink_ftext(
-            text = "Electoral Democracy Index",
-            href = "https://ourworldindata.org/grapher/electoral-democracy-index",
+            text = "Political Stability Index",
+            href = "https://data360.worldbank.org/en/indicator/GOV_WGI_PV",
             prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 8)
           ),
-          ftext(" ranges from 0 (least democratic) to 1 (most democratic). The categories shown reflect the "),
-          hyperlink_ftext(
-            text = "Regimes of the World",
-            href = "https://ourworldindata.org/regimes-of-the-world-data",
-            prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 8)
-          ),
-          ftext(" classifications used by "),
-          hyperlink_ftext(
-            text = "V-DEM",
-            href = "https://v-dem.net/",
-            prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 8)
-          ),
+          ftext(" ranges from 0 (very low stability) to 100 (very high stability)."),
           fp_p = fp_par(word_style = "Caption_Note")
         )
       ) |> 
