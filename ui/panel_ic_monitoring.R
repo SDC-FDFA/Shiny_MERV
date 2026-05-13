@@ -6,8 +6,12 @@ panel_ic_monitoring <- nav_panel(
     width = 250,
     p("Select countries and year and click on 'Fetch data' at the bottom",
       style = "font-size: 0.75rem; color: #666;"),
-    selectInput("main_country", "Main Country:", choices = country_list, selected = "LAO"),
-    checkboxGroupInput("comparison_countries", "Reference Countries:", choices = country_list, selected = c("KHM", "THA")),
+    selectInput("main_country", "Main Country:", choices = country_list, 
+                #selected = "LAO"
+                ),
+    checkboxGroupInput("comparison_countries", "Reference Countries:", choices = country_list, 
+                       #selected = c("KHM", "THA")
+                       ),
     checkboxGroupInput("years", "Years:", choices = 2018:2025, selected = 2018:2025, inline = TRUE),
     actionButton("fetch_data", "1. Fetch Data", icon = icon("download"),
                  class = "btn-primary w-100 mt-2")
