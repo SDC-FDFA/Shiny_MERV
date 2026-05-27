@@ -2,16 +2,12 @@
 # INFORM Risk Index
 
 get_c_2_cpi <- function(countries, years) {
-  data_values <- read.csv("https://data.humdata.org/dataset/fb4adde0-93d5-4ff9-befc-4a6916c1181b/resource/a6a4e225-50bb-4abf-958c-c37e3c3b380b/download/global-cpi-all.csv") |> 
-    select(iso3, year, score) |> 
-    rename(code = iso3,
-           value = score) |> 
-    filter(year %in% years) |> 
+  data_values <- read.csv("https://ourworldindata.org/grapher/ti-corruption-perception-index.csv?v=1&csvType=full&useColumnShortNames=true") |> 
+    rename(value = cpi_score) |> 
+    select(year, code, value) |> 
     filter(code %in% countries) |> 
-    mutate(
-      value = as.numeric(value),
-      year = as.numeric(year)
-    )
+    filter(year %in% years) 
+  
   return(data_values)
   
 }

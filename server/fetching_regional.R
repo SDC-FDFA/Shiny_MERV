@@ -24,7 +24,7 @@ bready_resolution_data_reg <- reactiveVal(NULL)
 observeEvent(input$fetch_data_reg, {
   req(input$years)
   
-  countries <- c(input$comparison_countries)
+  countries <- c(input$comparison_countries_reg)
   years <- as.numeric(input$years)
   
   # A_1_Fetch Fragile States index data

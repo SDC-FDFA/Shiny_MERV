@@ -290,6 +290,7 @@ panel_ic_monitoring <- nav_panel(
     )
   ),
   
+  div(class = "small", "If B-READY value is 0, no values available for the selected country."),
   # div(
   #   style = "width: 100%; max-width: 900px; height: 300px; overflow: hidden;",
   #   girafeOutput("bready_resolution_plot", width = "100%", height = "300px")

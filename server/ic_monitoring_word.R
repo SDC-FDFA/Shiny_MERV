@@ -839,7 +839,7 @@ output$download_report <- downloadHandler(
                      (quality of regulations, public services and ease of resolving a commercial
                      dispute. The overall score ranges from 0 (worst)
                      to 100 (best). This is a new indicator and not yet available
-                     for all countries."),
+                     for all countries. If the value is 0, no values are available."),
           fp_p = fp_par(word_style = "Caption_Note")
         )
       ) |> 

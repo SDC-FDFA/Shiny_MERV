@@ -7,7 +7,7 @@ panel_regional <- nav_panel(
     p("Select countries and year and click on 'Fetch data' at the bottom",
       style = "font-size: 0.75rem; color: #666;"),
     #selectInput("main_country", "Main Country:", choices = country_list, selected = "LAO"),
-    checkboxGroupInput("comparison_countries", "Select Countries:", choices = country_list, 
+    checkboxGroupInput("comparison_countries_reg", "Select Countries:", choices = country_list, 
                        #selected = c("KHM", "THA")
                        ),
     checkboxGroupInput("years", "Years:", choices = 2018:2025, selected = 2018:2025, inline = TRUE),
@@ -191,6 +191,8 @@ panel_regional <- nav_panel(
                   type = 7, color.background = "#FFFFFF", color = "#519796")
     )
   ),
+  
+  div(class = "small", "If B-READY value is 0, no values available for the selected country."),
   
   hr(),
   

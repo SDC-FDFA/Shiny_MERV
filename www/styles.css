@@ -9,6 +9,11 @@ body {
   font-family: Arial, sans-serif;
 }
 
+small {
+  font-family: Arial, sans-serif;
+  font-size: 0.6rem;
+}
+
 /* Section headers */
 h3 {
     margin-top: 0.2rem;

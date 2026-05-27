@@ -7,7 +7,13 @@ wb_wgi <- "World Bank - Worldwide Governance Indicators"
 
 # Summarised contents
 
-i_1 <- "based on initial Cooperation Programme scenarios and the assessed 'Consequences for the programme operations' in part 'ii. Analyses'"
+i_1 <- "based on initial Cooperation Programme scenarios and the assessed 'Consequences for the programme operations' in part 'ii. Analyses' \n
+OR \n
+Select “Changes with no implications to the programme” if the programme portfolio and projects do not specifically need to adjusted due to the context change.
+
+Select “Changes with moderate implications to the programme” if some projects had to be adjusted due to the context change (e.g. extension, adjustment or cancelation of one or more projects).
+
+Select “Changes with significant implications to the programme” if the current Cooperation Programme requires fundamental adjustment/reorientation of the objectives and approach due to the context change (e.g. after new or escalated armed conflicts, regime change, natural disaters, etc.)."
 
 i_2 <- "• Synthesize the shifts, if any, described under 'b) Consequences for the programme operations' of each chapter of part ii. Analyses with the focus on: 1) CoPr scenario; 2) CoPr assumptions and risks (RDM results framework); or 3) Major/severe project portfolio risks (SDC Projects risks).
 • Describe how these shifts, if any, affect the programme implementation, and how the latter must be strategically or operationally adjusted and steered.
