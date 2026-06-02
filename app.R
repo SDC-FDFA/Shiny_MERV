@@ -9,6 +9,8 @@ library(ggiraph)
 library(bslib)
 library(shinycssloaders)
 library(RColorBrewer)
+library(leaflet)
+library(sf)
 
 source("functions.R")
 source("text.R")
@@ -16,6 +18,7 @@ source("comments.R")
 source("ui/panel_ic_monitoring.R")
 source("ui/panel_regional.R")
 source("ui/panel_about.R")
+# source("ui/panel_mpi.R")
 
 
 # UI
@@ -29,6 +32,7 @@ ui <- page_navbar(
       nav_spacer(),
       panel_ic_monitoring,
       panel_regional,
+      # panel_mpi,
       panel_about
 
 )
@@ -41,7 +45,8 @@ server <- function(input, output, session) {
   source("server/ic_monitoring_plots.R",      local = TRUE)
   source("server/regional_plots.R",      local = TRUE)
   source("server/ic_monitoring_word.R",      local = TRUE)
-
+  # source("server/server_mpi.R",      local = TRUE)
+  
 }
 
 # Run the app

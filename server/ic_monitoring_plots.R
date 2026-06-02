@@ -224,20 +224,20 @@ output$cpi_plot <- renderGirafe({
 })
 
 # C_2_Functioning government index Plot
-output$fgi_plot <- renderGirafe({
-  req(fgi_data())
-  
-  df_fgi <- fgi_data() |>
-    left_join(country_tibble, by = "code")
-  
-  nyears <- length(unique(df_fgi$year))
-  main_country <- input$main_country
-  
-  # country <- get_country_name()
-  
-  draw_plot_girafe(df_fgi, main_country, nyears, "Functioning Government Index", "Economist Intelligence Unit processed by Our World in Data")
-  
-})
+# output$fgi_plot <- renderGirafe({
+#   req(fgi_data())
+#   
+#   df_fgi <- fgi_data() |>
+#     left_join(country_tibble, by = "code")
+#   
+#   nyears <- length(unique(df_fgi$year))
+#   main_country <- input$main_country
+#   
+#   # country <- get_country_name()
+#   
+#   draw_plot_girafe(df_fgi, main_country, nyears, "Functioning Government Index", "Economist Intelligence Unit processed by Our World in Data")
+#   
+# })
 # # C_2_Government effectiveness Plot
 # output$gov_effectiveness_plot <- renderPlot({
 #   req(gov_effectiveness_data())

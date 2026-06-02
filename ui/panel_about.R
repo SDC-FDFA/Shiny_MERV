@@ -127,15 +127,15 @@ panel_about <- nav_panel(
   ),
   hr(),
   div(class = "plot-card-header", "2) Government effectiveness and control of corruption"),
-  tags$p(
-    "The ",
-    tags$a(
-      "Functioning Government Index",
-      href = "https://ourworldindata.org/grapher/functioning-government-index-eiu",
-      target = "_blank"
-    ),
-    " ranges from 0 (least effective) to 10 (most effective)."
-  ),
+  # tags$p(
+  #   "The ",
+  #   tags$a(
+  #     "Functioning Government Index",
+  #     href = "https://ourworldindata.org/grapher/functioning-government-index-eiu",
+  #     target = "_blank"
+  #   ),
+  #   " ranges from 0 (least effective) to 10 (most effective)."
+  # ),
   tags$p(
     "The ",
     tags$a(

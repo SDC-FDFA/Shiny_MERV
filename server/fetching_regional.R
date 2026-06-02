@@ -12,7 +12,7 @@ gii_data_reg <- reactiveVal(NULL)
 climate_change_data_reg <- reactiveVal(NULL)
 risk_index_data_reg <- reactiveVal(NULL)
 cpi_data_reg <- reactiveVal(NULL)
-fgi_data_reg <- reactiveVal(NULL)
+# fgi_data_reg <- reactiveVal(NULL)
 # gov_effectiveness_data <- reactiveVal(NULL)
 # ctrl_corruption_data <- reactiveVal(NULL)
 oda_gni_data_reg <- reactiveVal(NULL)
@@ -211,19 +211,19 @@ observeEvent(input$fetch_data_reg, {
     showNotification("Failed to fetch corruption perceptions data.", type = "warning", duration = 5)
   }
   
-  # C_2_Functioning Government data
-  showNotification("Fetching Functioning government index data...", type = "message", duration = NULL, id = "fetch_fgi")
-  
-  c_2_fgi_df <- get_owid_c_2_fgi_data(countries, years)
-  
-  if (!is.null(c_2_fgi_df) && nrow(c_2_fgi_df) > 0) {
-    fgi_data_reg(c_2_fgi_df)
-    removeNotification(id = "fetch_fgi")
-    showNotification("Functioning government data fetched successfully!", type = "message", duration = 2)
-  } else {
-    removeNotification(id = "fetch_fgi")
-    showNotification("Failed to fetch functioning government data.", type = "warning", duration = 5)
-  }
+  # # C_2_Functioning Government data
+  # showNotification("Fetching Functioning government index data...", type = "message", duration = NULL, id = "fetch_fgi")
+  # 
+  # c_2_fgi_df <- get_owid_c_2_fgi_data(countries, years)
+  # 
+  # if (!is.null(c_2_fgi_df) && nrow(c_2_fgi_df) > 0) {
+  #   fgi_data_reg(c_2_fgi_df)
+  #   removeNotification(id = "fetch_fgi")
+  #   showNotification("Functioning government data fetched successfully!", type = "message", duration = 2)
+  # } else {
+  #   removeNotification(id = "fetch_fgi")
+  #   showNotification("Failed to fetch functioning government data.", type = "warning", duration = 5)
+  # }
   
   # # C_2_Government effectiveness data
   # showNotification("Fetching Government effectiveness data...", type = "message", duration = NULL, id = "fetch_gov_effectiveness")
