@@ -60,9 +60,9 @@ output$download_report <- downloadHandler(
     df_cpi <- cpi_data() |>
       left_join(country_tibble, by = "code")
     
-    req(fgi_data())
-    df_fgi <- fgi_data() |>
-      left_join(country_tibble, by = "code")
+    # req(fgi_data())
+    # df_fgi <- fgi_data() |>
+    #   left_join(country_tibble, by = "code")
     
     # req(gov_effectiveness_data())
     # df_gov_effectiveness <- gov_effectiveness_data() |>
@@ -628,43 +628,43 @@ output$download_report <- downloadHandler(
     doc <- doc |>
       body_add_par("2) Government effectiveness and control of corruption", style = "Heading 2_red") 
     
-    # Create and save the plot
-    temp_plot_fgi <- tempfile(fileext = ".png")
-    
-    nyears <- length(unique(df_fgi$year))
-    main_country <- input$main_country
-    
-    ggsave(temp_plot_fgi, plot = draw_plot(df_fgi, main_country, nyears, "Functioning Government Index", "Economist Intelligence Unit - processed by Our World in Data"), width = 6, height = 1.8, dpi = 200)
-    
-    # Add plot to document
-    doc <- doc |>
-      body_add_img(src = temp_plot_fgi, width = 6, height = 1.8, style = "Compact")
-    
-    # Create and save the categories plot
-    temp_plot_fgi_cat <- tempfile(fileext = ".png")
-    
-    main_country <- input$main_country
-    
-    ggsave(temp_plot_fgi_cat, plot = draw_plot_categories_noval(df_fgi, main_country, fgi_label, fgi_min, fgi_max, fgi_color), width = 6, height = 0.5, dpi = 200)
-    
-    # Add plot to document
-    doc <- doc |>
-      body_add_img(src = temp_plot_fgi_cat, width = 6, height = 0.5, style = "Compact")
-    
-    doc <- doc |>
-      body_add_fpar(
-        fpar(
-          ftext("The categories shown are indicative (cut-off values are not official). The "),
-          hyperlink_ftext(
-            text = "Functioning Government Index",
-            href = "https://ourworldindata.org/grapher/functioning-government-index-eiu",
-            prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 8)
-          ),
-          ftext(" ranges from 0 (least effective) to 10 (most effective)."),
-          fp_p = fp_par(word_style = "Caption_Note")
-        )
-      ) 
-    
+    # # Create and save the plot
+    # temp_plot_fgi <- tempfile(fileext = ".png")
+    # 
+    # nyears <- length(unique(df_fgi$year))
+    # main_country <- input$main_country
+    # 
+    # ggsave(temp_plot_fgi, plot = draw_plot(df_fgi, main_country, nyears, "Functioning Government Index", "Economist Intelligence Unit - processed by Our World in Data"), width = 6, height = 1.8, dpi = 200)
+    # 
+    # # Add plot to document
+    # doc <- doc |>
+    #   body_add_img(src = temp_plot_fgi, width = 6, height = 1.8, style = "Compact")
+    # 
+    # # Create and save the categories plot
+    # temp_plot_fgi_cat <- tempfile(fileext = ".png")
+    # 
+    # main_country <- input$main_country
+    # 
+    # ggsave(temp_plot_fgi_cat, plot = draw_plot_categories_noval(df_fgi, main_country, fgi_label, fgi_min, fgi_max, fgi_color), width = 6, height = 0.5, dpi = 200)
+    # 
+    # # Add plot to document
+    # doc <- doc |>
+    #   body_add_img(src = temp_plot_fgi_cat, width = 6, height = 0.5, style = "Compact")
+    # 
+    # doc <- doc |>
+    #   body_add_fpar(
+    #     fpar(
+    #       ftext("The categories shown are indicative (cut-off values are not official). The "),
+    #       hyperlink_ftext(
+    #         text = "Functioning Government Index",
+    #         href = "https://ourworldindata.org/grapher/functioning-government-index-eiu",
+    #         prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 8)
+    #       ),
+    #       ftext(" ranges from 0 (least effective) to 10 (most effective)."),
+    #       fp_p = fp_par(word_style = "Caption_Note")
+    #     )
+    #   ) 
+    # 
     # Create and save the plot
     temp_plot_cpi <- tempfile(fileext = ".png")
     
