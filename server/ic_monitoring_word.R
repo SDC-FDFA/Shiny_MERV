@@ -661,7 +661,7 @@ output$download_report <- downloadHandler(
           ftext("The categories shown are indicative (cut-off values are not official). The "),
           hyperlink_ftext(
             text = "Quality of Government (QoG) Index",
-            href = "https://ourworldindata.org/grapher/functioning-government-index-eiu",
+            href = "https://datafinder.qog.gu.se/variable/icrg_qog",
             prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 8)
           ),
           ftext(" ranges from 0 (least) to 1 (highest quality)."),
