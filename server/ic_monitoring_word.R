@@ -60,6 +60,10 @@ output$download_report <- downloadHandler(
     df_cpi <- cpi_data() |>
       left_join(country_tibble, by = "code")
     
+    req(qog_data())
+    df_qog <- qog_data() |>
+      left_join(country_tibble, by = "code")
+    
     # req(fgi_data())
     # df_fgi <- fgi_data() |>
     #   left_join(country_tibble, by = "code")
@@ -627,6 +631,44 @@ output$download_report <- downloadHandler(
     # 2) Government effectiveness and control of corruption
     doc <- doc |>
       body_add_par("2) Government effectiveness and control of corruption", style = "Heading 2_red") 
+    
+    # Create and save the plot
+    temp_plot_qog <- tempfile(fileext = ".png")
+
+    nyears <- length(unique(df_qog$year))
+    main_country <- input$main_country
+
+    ggsave(temp_plot_qog, plot = draw_plot(df_qog, main_country, nyears, "Quality of Government (QoG) Index", "University of Gothenburg"), width = 6, height = 1.8, dpi = 200)
+
+    # Add plot to document
+    doc <- doc |>
+      body_add_img(src = temp_plot_qog, width = 6, height = 1.8, style = "Compact")
+
+    # Create and save the categories plot
+    temp_plot_qog_cat <- tempfile(fileext = ".png")
+
+    main_country <- input$main_country
+
+    ggsave(temp_plot_qog_cat, plot = draw_plot_categories_noval(df_qog, main_country, qog_label, qog_min, qog_max, qog_color), width = 6, height = 0.5, dpi = 200)
+
+    # Add plot to document
+    doc <- doc |>
+      body_add_img(src = temp_plot_qog_cat, width = 6, height = 0.5, style = "Compact")
+
+    doc <- doc |>
+      body_add_fpar(
+        fpar(
+          ftext("The categories shown are indicative (cut-off values are not official). The "),
+          hyperlink_ftext(
+            text = "Quality of Government (QoG) Index",
+            href = "https://ourworldindata.org/grapher/functioning-government-index-eiu",
+            prop  = fp_text(color = "#0563C1", underlined = TRUE, font.size = 8)
+          ),
+          ftext(" ranges from 0 (least) to 1 (highest quality)."),
+          fp_p = fp_par(word_style = "Caption_Note")
+        )
+      )
+
     
     # # Create and save the plot
     # temp_plot_fgi <- tempfile(fileext = ".png")

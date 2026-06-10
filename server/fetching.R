@@ -12,6 +12,7 @@ gii_data <- reactiveVal(NULL)
 climate_change_data <- reactiveVal(NULL)
 risk_index_data <- reactiveVal(NULL)
 cpi_data <- reactiveVal(NULL)
+qog_data <- reactiveVal(NULL)
 # fgi_data <- reactiveVal(NULL)
 # gov_effectiveness_data <- reactiveVal(NULL)
 # ctrl_corruption_data <- reactiveVal(NULL)
@@ -208,6 +209,20 @@ observeEvent(input$fetch_data, {
   } else {
     removeNotification(id = "fetch_cpi")
     showNotification("Failed to fetch corruption perceptions data.", type = "warning", duration = 5)
+  }
+  
+  # C_2_Quality of Government data
+  showNotification("Fetching Quality of Government data...", type = "message", duration = NULL, id = "fetch_qog")
+
+  c_2_qog_df <- get_qog_c_2_data(countries, years)
+
+  if (!is.null(c_2_qog_df) && nrow(c_2_qog_df) > 0) {
+    qog_data(c_2_qog_df)
+    removeNotification(id = "fetch_qog")
+    showNotification("Quality of Government data fetched successfully!", type = "message", duration = 2)
+  } else {
+    removeNotification(id = "fetch_qog")
+    showNotification("Failed to fetch Quality of Government data.", type = "warning", duration = 5)
   }
   
   # # C_2_Functioning Government data

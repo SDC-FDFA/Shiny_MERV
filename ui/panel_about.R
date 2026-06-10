@@ -127,6 +127,15 @@ panel_about <- nav_panel(
   ),
   hr(),
   div(class = "plot-card-header", "2) Government effectiveness and control of corruption"),
+  tags$p(
+    "The ",
+    tags$a(
+      "Quality of Government (QoG) Index",
+      href = "https://datafinder.qog.gu.se/variable/icrg_qog",
+      target = "_blank"
+    ),
+    " by the University of Gothenburg ranges from 0 (lowest) to 1 (highest quality)."
+  ),
   # tags$p(
   #   "The ",
   #   tags$a(
