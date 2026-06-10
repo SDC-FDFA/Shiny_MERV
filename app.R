@@ -7,8 +7,8 @@ library(flextable)
 library(config)
 library(ggiraph)
 library(bslib)
-library(shinycssloaders)
-# library(RColorBrewer)
+library(shinycssloaders) # needed for the spinners
+library(RColorBrewer)
 # library(leaflet)
 # library(sf)
 
