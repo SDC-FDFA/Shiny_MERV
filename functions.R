@@ -1,4 +1,6 @@
 
+# country_list_mpi <- readRDS("rawdata/country_list_mpi.rds")
+
 # Country list (ISO3 codes)
 country_list <- c(
   "Afghanistan" = "AFG",
@@ -111,6 +113,7 @@ source("fun/C_2_CPI.R")
 # source("fun/C_2_Functioning_Gov_Index.R")
 source("fun/C_2_Government_Effectiveness.R")
 source("fun/C_2_Quality_Of_Government.R")
+source("fun/C_2_FreedomHouse_FunctioningGovernment.R")
 source("fun/C_2_Control_Corruption.R")
 source("fun/C_3_ODA_GNI.R")
 source("fun/C_4_CCSI.R")

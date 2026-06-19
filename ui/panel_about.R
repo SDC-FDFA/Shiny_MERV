@@ -130,11 +130,11 @@ panel_about <- nav_panel(
   tags$p(
     "The ",
     tags$a(
-      "Quality of Government (QoG) Index",
-      href = "https://datafinder.qog.gu.se/variable/icrg_qog",
+      "Functioning of Government",
+      href = "https://freedomhouse.org/reports/freedom-world/freedom-world-research-methodology#:~:text=C.%20FUNCTIONING%20OF%20GOVERNMENT",
       target = "_blank"
     ),
-    " by the University of Gothenburg ranges from 0 (lowest) to 1 (highest quality)."
+    " is one of three subcategories of Political Rights by Freedom House and ranges from 0 (worst) to 12 (best)."
   ),
   # tags$p(
   #   "The ",

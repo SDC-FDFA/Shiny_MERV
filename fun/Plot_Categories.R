@@ -10,7 +10,7 @@ draw_plot_categories <- function(x, main_c, cat_labels, cat_min, cat_max, cat_co
   if (length(indicator_value) == 0 || all(is.na(indicator_value))) {
     ggplot() +
       annotate("text", x = 0.5, y = 0.5,
-               label = "No category data availble",
+               label = "No category data available",
                size = 3.5, color = "grey50", hjust = 0.5) +
       theme_void()
   } else {

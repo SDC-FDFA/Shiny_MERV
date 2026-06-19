@@ -224,18 +224,18 @@ output$cpi_plot <- renderGirafe({
 })
 
 # C_2_Quality of Government Plot
-output$qog_plot <- renderGirafe({
-  req(qog_data())
+output$fhfgi_plot <- renderGirafe({
+  req(fhfgi_data())
 
-  df_qog <- qog_data() |>
+  df_fhfgi <- fhfgi_data() |>
     left_join(country_tibble, by = "code")
 
-  nyears <- length(unique(df_qog$year))
+  nyears <- length(unique(df_fhfgi$year))
   main_country <- input$main_country
 
   # country <- get_country_name()
 
-  draw_plot_girafe(df_qog, main_country, nyears, "Quality of Government (QoG) Index", "University of Gothenburg")
+  draw_plot_girafe(df_fhfgi, main_country, nyears, "Functioning of Government", "Freedom House")
 
 })
 

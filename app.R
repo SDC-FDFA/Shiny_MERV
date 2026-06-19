@@ -8,7 +8,7 @@ library(config)
 library(ggiraph)
 library(bslib)
 library(shinycssloaders) # needed for the spinners
-library(RColorBrewer)
+library(RColorBrewer) # needed for the regional analysis
 # library(leaflet)
 # library(sf)
 

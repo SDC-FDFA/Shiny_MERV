@@ -12,7 +12,7 @@ gii_data_reg <- reactiveVal(NULL)
 climate_change_data_reg <- reactiveVal(NULL)
 risk_index_data_reg <- reactiveVal(NULL)
 cpi_data_reg <- reactiveVal(NULL)
-qog_data_reg <- reactiveVal(NULL)
+fhfgi_data_reg <- reactiveVal(NULL)
 # fgi_data_reg <- reactiveVal(NULL)
 # gov_effectiveness_data <- reactiveVal(NULL)
 # ctrl_corruption_data <- reactiveVal(NULL)
@@ -213,17 +213,17 @@ observeEvent(input$fetch_data_reg, {
   }
   
   # C_2_Quality of Government data
-  showNotification("Fetching Quality of Government data...", type = "message", duration = NULL, id = "fetch_qog")
+  showNotification("Fetching Functioning of Government data...", type = "message", duration = NULL, id = "fetch_fhfgi")
 
-  c_2_qog_df <- get_qog_c_2_data(countries, years)
+  c_2_fhfgi_df <- get_fhfgi_c_2_data(countries, years)
 
-  if (!is.null(c_2_qog_df) && nrow(c_2_qog_df) > 0) {
-    qog_data_reg(c_2_qog_df)
-    removeNotification(id = "fetch_qog")
-    showNotification("Quality of Government data fetched successfully!", type = "message", duration = 2)
+  if (!is.null(c_2_fhfgi_df) && nrow(c_2_fhfgi_df) > 0) {
+    fhfgi_data_reg(c_2_fhfgi_df)
+    removeNotification(id = "fetch_fhfgi")
+    showNotification("Functioning of Government data fetched successfully!", type = "message", duration = 2)
   } else {
-    removeNotification(id = "fetch_qog")
-    showNotification("Failed to fetch Quality of Government data.", type = "warning", duration = 5)
+    removeNotification(id = "fetch_fhfgi")
+    showNotification("Failed to fetch Functioning of Government data.", type = "warning", duration = 5)
   }
   
   # # C_2_Functioning Government data

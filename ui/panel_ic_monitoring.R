@@ -211,7 +211,7 @@ panel_ic_monitoring <- nav_panel(
     div(class = "plot-card-header", "2) Government effectiveness and control of corruption"),
     div(
       class = "plot-card-body",
-      withSpinner(girafeOutput("qog_plot", width = "100%", height = "300px"),
+      withSpinner(girafeOutput("fhfgi_plot", width = "100%", height = "300px"),
                   type = 7, color.background = "#FFFFFF", color = "#519796")
     )
   ),
